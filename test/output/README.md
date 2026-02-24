@@ -4,14 +4,29 @@ This directory contains the generated Mermaid diagrams from the test suite.
 
 ## Files
 
+- **diagram.html** - Interactive HTML (recommended - just open in browser!)
 - **diagram.mmd** - Mermaid class diagram syntax
-- **diagram.json** - JSON format compatible with Mermaid Live Editor
+- **diagram.json** - JSON with diagram code (copy the "code" field value)
 
 ## Visualizing the Diagram
 
+### Option 1: HTML (Easiest) ⭐
+
+Simply double-click or open `diagram.html` in your browser. The diagram will render with full interactivity.
+
+### Option 2: Copy MMD to Mermaid Live
+
 1. Open https://mermaid.live
-2. Paste the content of `diagram.json` into the editor
-3. The diagram will render automatically
+2. Copy the entire content of `diagram.mmd`
+3. Paste into the editor
+4. The diagram will render automatically
+
+### Option 3: Copy JSON code to Mermaid Live
+
+1. Open https://mermaid.live
+2. Open `diagram.json` and copy only the value between the quotes after `"code":`
+3. Paste into Mermaid Live editor
+4. The diagram will render automatically
 
 ## Generated After Tests
 

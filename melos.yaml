@@ -2,11 +2,12 @@ name: parse_dart
 repository: https://github.com/lgualandi/parse_dart
 
 packages:
-  - .
+  - "parse_dart"
 
 command:
   bootstrap:
-    runPubGetInParallel: true
+    runPubGetInParallel: false
+    useFlutter: false
 
 scripts:
   test:

@@ -4,16 +4,8 @@ This project uses a custom Dart script runner for managing development commands.
 
 ## Usage
 
-All commands use the same pattern:
-
 ```bash
 dart run bin/run_scripts.dart <command>
-```
-
-Or with the shell wrapper (Unix/Linux/macOS):
-
-```bash
-./run.sh <command>
 ```
 
 ## Available Commands
@@ -57,20 +49,9 @@ dart run bin/run_scripts.dart pub:outdated      # Show outdated packages
 dart run bin/run_scripts.dart build:example     # Run example
 ```
 
-## Shell Wrapper
-
-For easier access on Unix/Linux/macOS:
-
-```bash
-./run.sh test
-./run.sh dev
-./run.sh check:all
-./run.sh build:example
-```
-
 ## Direct Dart Commands
 
-You can always use Dart CLI directly:
+You can also use Dart CLI directly without the runner:
 
 ```bash
 dart test
@@ -104,11 +85,3 @@ case 'my:command':
 | Pre-commit | `dart run bin/run_scripts.dart check:all` |
 | CI checks | `dart run bin/run_scripts.dart ci` |
 | Example | `dart run bin/run_scripts.dart build:example` |
-
-Or with wrapper:
-
-| Task | Command |
-|------|---------|
-| Test | `./run.sh test` |
-| All checks | `./run.sh check:all` |
-| Dev setup | `./run.sh dev` |

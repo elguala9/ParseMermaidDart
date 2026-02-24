@@ -1,0 +1,8 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - camel_case_types
+    - camel_case_extensions
+    - library_names
+    - file_names

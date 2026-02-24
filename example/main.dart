@@ -32,7 +32,10 @@ Future<void> main() async {
   // Save outputs
   await result.saveMermaidFile('diagram.mmd');
   await result.saveJsonFile('diagram.json');
+  await result.saveHtmlFile('diagram.html');
 
-  print('\n✓ Saved diagram.mmd and diagram.json');
-  print('Copy the JSON output to https://mermaid.live to visualize!');
+  print('\n✓ Saved diagram.mmd, diagram.json, and diagram.html');
+  print('\nVisualization options:');
+  print('1. Open diagram.html in your browser (recommended)');
+  print('2. Copy content of diagram.mmd to https://mermaid.live');
 }

@@ -139,7 +139,7 @@ void main() {
       expect(c.extendsClass, 'B');
     });
 
-    test('saves mermaid and json output files', () async {
+    test('saves mermaid, json, and html output files', () async {
       final parser = ParseDart('test/fixtures');
       final result = await parser.analyze();
 
@@ -147,20 +147,25 @@ void main() {
       final outputDir = Directory('test/output');
       await outputDir.create(recursive: true);
 
-      // Save both formats
+      // Save all formats
       await result.saveMermaidFile('test/output/diagram.mmd');
       await result.saveJsonFile('test/output/diagram.json');
+      await result.saveHtmlFile('test/output/diagram.html');
 
       // Verify files exist
       expect(File('test/output/diagram.mmd').existsSync(), true);
       expect(File('test/output/diagram.json').existsSync(), true);
+      expect(File('test/output/diagram.html').existsSync(), true);
 
       // Verify content
       final mermaidContent = File('test/output/diagram.mmd').readAsStringSync();
       final jsonContent = File('test/output/diagram.json').readAsStringSync();
+      final htmlContent = File('test/output/diagram.html').readAsStringSync();
 
       expect(mermaidContent, contains('classDiagram'));
       expect(jsonContent, contains('"code"'));
+      expect(htmlContent, contains('<html'));
+      expect(htmlContent, contains('mermaid'));
     });
   });
 }

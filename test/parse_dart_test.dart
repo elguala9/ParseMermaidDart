@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:parse_dart/parse_dart.dart';
 import 'package:test/test.dart';
 
@@ -135,6 +137,30 @@ void main() {
 
       final c = result.classes.firstWhere((c) => c.name == 'C');
       expect(c.extendsClass, 'B');
+    });
+
+    test('saves mermaid and json output files', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      // Create output directory
+      final outputDir = Directory('test/output');
+      await outputDir.create(recursive: true);
+
+      // Save both formats
+      await result.saveMermaidFile('test/output/diagram.mmd');
+      await result.saveJsonFile('test/output/diagram.json');
+
+      // Verify files exist
+      expect(File('test/output/diagram.mmd').existsSync(), true);
+      expect(File('test/output/diagram.json').existsSync(), true);
+
+      // Verify content
+      final mermaidContent = File('test/output/diagram.mmd').readAsStringSync();
+      final jsonContent = File('test/output/diagram.json').readAsStringSync();
+
+      expect(mermaidContent, contains('classDiagram'));
+      expect(jsonContent, contains('"code"'));
     });
   });
 }

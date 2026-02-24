@@ -1,0 +1,27 @@
+# Flutter and Dart specific
+.dart_tool/
+.packages
+pubspec.lock
+build/
+
+# Analysis
+.analysis_options
+.dart_tool
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Generated files
+diagram.mmd
+diagram.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/

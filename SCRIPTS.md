@@ -1,19 +1,19 @@
 # Scripts and Commands
 
-This project uses **Melos** for managing development scripts and commands.
+This project uses a custom Dart script runner for managing development commands.
 
-## Setup
+## Usage
 
-### Install Melos (globally)
+All commands use the same pattern:
 
 ```bash
-dart pub global activate melos
+dart run bin/run_scripts.dart <command>
 ```
 
-### Bootstrap the workspace
+Or with the shell wrapper (Unix/Linux/macOS):
 
 ```bash
-melos bootstrap
+./run.sh <command>
 ```
 
 ## Available Commands
@@ -21,117 +21,94 @@ melos bootstrap
 ### Testing
 
 ```bash
-# Run all tests
-melos test
-
-# Run tests in watch mode
-melos test:watch
-
-# Run tests with coverage
-melos test:coverage
+dart run bin/run_scripts.dart test              # Run all tests
+dart run bin/run_scripts.dart test:watch        # Run tests in watch mode
+dart run bin/run_scripts.dart test:coverage     # Run tests with coverage
 ```
 
 ### Code Quality
 
 ```bash
-# Analyze code
-melos analyze
-
-# Check code format
-melos format
-
-# Fix code format
-melos format:fix
-
-# Run lint checks (strict)
-melos lint
+dart run bin/run_scripts.dart analyze           # Analyze code
+dart run bin/run_scripts.dart format            # Check code format
+dart run bin/run_scripts.dart format:fix        # Fix code format
+dart run bin/run_scripts.dart lint              # Lint checks (strict)
 ```
 
-### Development
+### Development Workflows
 
 ```bash
-# Complete dev setup (get deps, analyze, test)
-melos dev
-
-# Pre-commit checks (format, analyze, test)
-melos check:all
-
-# CI checks (analyze, strict, test)
-melos ci
+dart run bin/run_scripts.dart dev               # Full setup (get, analyze, test)
+dart run bin/run_scripts.dart check:all         # All checks (format, analyze, test)
+dart run bin/run_scripts.dart ci                # CI checks (analyze, test)
 ```
 
 ### Dependencies
 
 ```bash
-# Get dependencies
-melos pub:get
-
-# Upgrade dependencies
-melos pub:upgrade
-
-# Show outdated packages
-melos pub:outdated
-
-# Clean cache
-melos clean
+dart run bin/run_scripts.dart pub:get           # Get dependencies
+dart run bin/run_scripts.dart pub:upgrade       # Upgrade dependencies
+dart run bin/run_scripts.dart pub:outdated      # Show outdated packages
 ```
 
-### Example
+### Build & Examples
 
 ```bash
-# Run example
-melos build:example
+dart run bin/run_scripts.dart build:example     # Run example
 ```
 
-## Using Dart CLI Directly
+## Shell Wrapper
 
-If you prefer not to use Melos:
+For easier access on Unix/Linux/macOS:
 
 ```bash
-# Run tests
+./run.sh test
+./run.sh dev
+./run.sh check:all
+./run.sh build:example
+```
+
+## Direct Dart Commands
+
+You can always use Dart CLI directly:
+
+```bash
 dart test
-
-# Analyze code
 dart analyze
-
-# Format code
 dart format .
-
-# Run example
 dart run example/main.dart
 ```
 
-## Melos Configuration
+## Customizing Commands
 
-The `melos.yaml` file defines all available scripts. Scripts are organized in sections:
-- Testing scripts (test, test:watch, test:coverage)
-- Code quality (analyze, format, lint)
-- Development workflows (dev, check:all, ci)
-- Dependency management (pub:get, pub:upgrade, pub:outdated, clean)
-- Build tasks (build:example)
+Edit `bin/run_scripts.dart` to add new commands or modify existing ones.
 
-To add custom scripts, edit `melos.yaml`:
+Each command is a case in the switch statement:
 
-```yaml
-scripts:
-  my:command:
-    description: My custom command
-    run: echo "Running custom command"
+```dart
+case 'my:command':
+  await runCommand('dart', ['my', 'command', 'args']);
 ```
-
-Then run with: `melos my:command`
 
 ## Quick Reference
 
 | Task | Command |
 |------|---------|
-| Test | `melos test` |
-| Test (watch) | `melos test:watch` |
-| Test (coverage) | `melos test:coverage` |
-| Analyze | `melos analyze` |
-| Format (check) | `melos format` |
-| Format (fix) | `melos format:fix` |
-| Dev setup | `melos dev` |
-| Pre-commit | `melos check:all` |
-| CI checks | `melos ci` |
-| Example | `melos build:example` |
+| Test | `dart run bin/run_scripts.dart test` |
+| Test (watch) | `dart run bin/run_scripts.dart test:watch` |
+| Test (coverage) | `dart run bin/run_scripts.dart test:coverage` |
+| Analyze | `dart run bin/run_scripts.dart analyze` |
+| Format (check) | `dart run bin/run_scripts.dart format` |
+| Format (fix) | `dart run bin/run_scripts.dart format:fix` |
+| Dev setup | `dart run bin/run_scripts.dart dev` |
+| Pre-commit | `dart run bin/run_scripts.dart check:all` |
+| CI checks | `dart run bin/run_scripts.dart ci` |
+| Example | `dart run bin/run_scripts.dart build:example` |
+
+Or with wrapper:
+
+| Task | Command |
+|------|---------|
+| Test | `./run.sh test` |
+| All checks | `./run.sh check:all` |
+| Dev setup | `./run.sh dev` |

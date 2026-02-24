@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+import 'src/generator/html_generator.dart';
 import 'src/generator/mermaid_generator.dart';
 import 'src/models/class_info.dart';
 import 'src/parser/dart_parser.dart';
@@ -66,6 +67,18 @@ class ParseResult {
   Future<void> saveJsonFile(String outputPath) async {
     final json = toMermaidJson();
     final content = jsonEncode(json);
+    await File(outputPath).writeAsString(content);
+  }
+
+  /// Generate interactive HTML with embedded Mermaid diagram.
+  String toHtml() {
+    final generator = HtmlGenerator();
+    return generator.generateHtml(classes);
+  }
+
+  /// Save interactive HTML file.
+  Future<void> saveHtmlFile(String outputPath) async {
+    final content = toHtml();
     await File(outputPath).writeAsString(content);
   }
 }

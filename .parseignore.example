@@ -1,0 +1,34 @@
+# Example .parseignore file
+# Copy this to .parseignore in your project root to customize
+# which directories and files are excluded from analysis
+
+# Build directories
+.dart_tool/
+build/
+dist/
+
+# Version control
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Generated code
+*.g.dart
+*.freezed.dart
+*.config.dart
+
+# Test directories (if you want to exclude them)
+# test/
+
+# Vendor/external code
+third_party/**
+vendor/**
+
+# Package files
+.packages
+pubspec.lock

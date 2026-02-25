@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added comprehensive `.pubignore` to reduce published package size (20 KB vs 26 KB)
 - Optimized file exclusions for cleaner pub.dev packages
 
+### Documentation
+- Added section on how to update the CLI tool
+- Clarified global installation and usage instructions
+
 ## [0.1.0] - 2026-02-26
 
 ### Added

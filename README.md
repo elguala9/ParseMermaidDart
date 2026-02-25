@@ -58,6 +58,26 @@ Then use the `parse` command from anywhere:
 parse <path> [options]
 ```
 
+### Updating the CLI Tool
+
+To update to the latest version:
+
+```bash
+dart pub global activate parse_mermaid_dart
+```
+
+This command automatically upgrades to the newest version. To update to a specific version:
+
+```bash
+dart pub global activate parse_mermaid_dart 0.1.1
+```
+
+To check the currently installed version:
+
+```bash
+parse --version
+```
+
 ## Interactive Comments
 
 Dart documentation comments (`///`) in your code automatically become **interactive click handlers** in generated diagrams!

@@ -4,10 +4,10 @@ version: 0.1.0
 
 publish_to: https://pub.dev
 
-homepage: https://github.com/parresia-dev/parse_mermaid_dart
-repository: https://github.com/parresia-dev/parse_mermaid_dart
-issue_tracker: https://github.com/parresia-dev/parse_mermaid_dart/issues
-documentation: https://github.com/parresia-dev/parse_mermaid_dart/blob/main/README.md
+homepage: https://github.com/elguala9/ParseMermaidDart
+repository: https://github.com/elguala9/ParseMermaidDart
+issue_tracker: https://github.com/elguala9/ParseMermaidDart/issues
+documentation: https://github.com/elguala9/ParseMermaidDart/blob/main/README.md
 
 environment:
   sdk: ^3.4.0

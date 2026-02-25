@@ -1,0 +1,27 @@
+# Exclude test output directories
+test/mermaid_output_parse/
+test_cleaned/
+test_external_libs/
+test_external_libs_fixed/
+test_external_marked/
+test_output_final/
+test_output_path_inline/
+test_output_verify/
+test_stdlib_output/
+
+# Exclude temporary output directories
+final_clean/
+final_output/
+final_with_types/
+lib_models_final/
+lib_models_fixed/
+lib_models_output/
+mermaid_output_parse/
+
+# Exclude development directories
+.serena/
+.parseignore
+
+# Exclude build artifacts
+.dart_tool/
+pubspec.lock

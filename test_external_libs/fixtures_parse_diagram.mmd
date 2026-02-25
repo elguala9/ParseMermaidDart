@@ -1,0 +1,202 @@
+classDiagram
+  class Animal {
+    <<abstract>>
+    📁 test/fixtures/generic_repository.dart
+    String name()
+    void makeSound()
+    void move()
+    int getAge()
+  }
+  class Dog {
+    <<class>>
+    📁 test/fixtures/generic_repository.dart
+    void makeSound()
+    void run()
+    void move()
+    int getAge()
+    void fetch()
+  }
+  class UserModel {
+    <<class>>
+    📁 test/fixtures/equatable_model.dart
+    List<Object> props()
+    String getDisplayName()
+    bool isAdult()
+  }
+  class Animal {
+    <<abstract>>
+    📁 test/fixtures/generic_repository.dart
+  }
+  class Dog {
+    <<class>>
+    📁 test/fixtures/generic_repository.dart
+  }
+  class AnimalRepository {
+    <<class>>
+    📁 test/fixtures/generic_repository.dart
+    List<Animal> getAll()
+    Dog? findByName(String name)
+  }
+  class ProductModel {
+    <<class>>
+    📁 test/fixtures/getx_controller_model.dart
+    String getPriceDisplay()
+    bool isPremium()
+    bool isHighlyRated()
+  }
+  class A {
+    <<class>>
+    📁 test/fixtures/multi_level.dart
+    void methodA()
+  }
+  class B {
+    <<class>>
+    📁 test/fixtures/multi_level.dart
+    void methodB()
+  }
+  class C {
+    <<class>>
+    📁 test/fixtures/multi_level.dart
+    void methodC()
+  }
+  class PetOwner {
+    <<mixin>>
+    📁 test/fixtures/pet_owner.dart
+    void adoptPet()
+    void feedPet()
+    void playWithPet()
+  }
+  class DogRepository {
+    <<class>>
+    📁 test/fixtures/repository.dart
+    void saveDog()
+    Dog? getDog()
+    List<Animal> getAllAnimals()
+    void deleteDog()
+  }
+  class Runnable {
+    <<interface>>
+    📁 test/fixtures/runnable.dart
+    void run()
+  }
+  class Shape {
+    <<sealed>>
+    📁 test/fixtures/sealed_shape.dart
+    double area()
+  }
+  class Circle {
+    <<class>>
+    📁 test/fixtures/sealed_shape.dart
+    double area()
+  }
+  class Rect {
+    <<class>>
+    📁 test/fixtures/sealed_shape.dart
+    double area()
+  }
+  class Status {
+    <<enumeration>>
+    📁 test/fixtures/status_enum.dart
+    int compareTo(Status other)
+  }
+  class Swimmer {
+    <<mixin>>
+    📁 test/fixtures/swimmer_mixin.dart
+    void swim()
+  }
+  class StringProcessor {
+    <<class>>
+    📁 test/fixtures/with_stdlib.dart
+    String processString(String input)
+    List<String> splitLines(String text)
+    Future<String> fetchString()
+  }
+  class CollectionHandler {
+    <<class>>
+    📁 test/fixtures/with_stdlib.dart
+    void addItem(String name, int count)
+    Set<String> getAllItems()
+  }
+  class String {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class int {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class List {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class Object {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class bool {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class Map {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class double {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class Comparable {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+  class Future {
+    <<interface>>
+    📁 test/fixtures/dart:async
+  }
+  class Set {
+    <<interface>>
+    📁 test/fixtures/dart:core
+  }
+
+  "_$ProductModel" <|.. ProductModel : with
+  A <|-- B : extends
+  Animal --> String : uses
+  Animal --> int : uses
+  Animal <|-- Dog : extends
+  Animal <|.. Swimmer : with
+  AnimalRepository --> Animal : uses
+  AnimalRepository --> Dog : uses
+  AnimalRepository --> List : uses
+  AnimalRepository --> Map : uses
+  AnimalRepository --> String : uses
+  B <|-- C : extends
+  Circle --> double : uses
+  CollectionHandler --> Map : uses
+  CollectionHandler --> Set : uses
+  CollectionHandler --> String : uses
+  CollectionHandler --> int : uses
+  Comparable <|.. Status : implements
+  Dog --> String : uses
+  Dog --> int : uses
+  DogRepository --> Animal : uses
+  DogRepository --> Dog : uses
+  DogRepository --> List : uses
+  DogRepository --> String : uses
+  Equatable <|-- UserModel : extends
+  PetOwner <|.. Dog : with
+  ProductModel --> String : uses
+  ProductModel --> bool : uses
+  Rect --> double : uses
+  Runnable <|.. Dog : implements
+  Shape --> double : uses
+  Shape <|-- Circle : extends
+  Shape <|-- Rect : extends
+  StringProcessor --> Future : uses
+  StringProcessor --> List : uses
+  StringProcessor --> String : uses
+  Swimmer <|.. Dog : with
+  UserModel --> List : uses
+  UserModel --> Object : uses
+  UserModel --> String : uses
+  UserModel --> bool : uses
+  UserModel --> int : uses

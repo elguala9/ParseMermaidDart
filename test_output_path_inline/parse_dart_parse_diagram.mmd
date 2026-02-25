@@ -1,0 +1,208 @@
+classDiagram
+  class BaseEntity {
+    <<abstract>>
+    📁 lib/models/base_entity.dart
+    String id()
+    String toString()
+  }
+  class SortedList {
+    <<class>>
+    📁 lib/models/sorted_list.dart
+    int length()
+    void length(int newLength)
+    T [](int index)
+    void []=(int index, T value)
+    void add(T value)
+    void _sort()
+  }
+  class User {
+    <<class>>
+    📁 lib/models/user.dart
+    String id()
+    int compareTo(User other)
+    String toString()
+  }
+  class UserRepository {
+    <<class>>
+    📁 lib/models/user_repository.dart
+    void addUser(User user)
+    List<User> getAllUsers()
+    User? findByAge(int age)
+  }
+  class ParseDart {
+    <<class>>
+    📁 lib/parse_dart.dart
+    Future<ParseResult> analyze()
+    Future<ParseResult> analyzeMonorepo()
+  }
+  class ParseResult {
+    <<class>>
+    📁 lib/parse_dart.dart
+    String toMermaid()
+    String toMermaidForPng()
+    Map<String, dynamic> toMermaidJson()
+    Future<void> saveMermaidFile(String outputPath)
+    Future<void> saveJsonFile(String outputPath)
+    String toHtml()
+    Future<void> saveHtmlFile(String outputPath)
+    Future<void> savePngFile(String outputPath)
+  }
+  class HtmlGenerator {
+    <<class>>
+    📁 lib/src/generator/html_generator.dart
+    String generateHtml(List<ClassInfo> classes)
+  }
+  class MermaidGenerator {
+    <<class>>
+    📁 lib/src/generator/mermaid_generator.dart
+    String generate(List<ClassInfo> classes, projectPath)
+    String _generateBaseCode(List<ClassInfo> classes)
+    String _generateCode(List<ClassInfo> classes, includeFilePath, projectPath)
+    String generateForPng(List<ClassInfo> classes)
+    Map<String, dynamic> generateJson(List<ClassInfo> classes, projectPath)
+    String _getStereotype(dynamic kind)
+    String _escapeName(String name)
+  }
+  class ClassKind {
+    <<enumeration>>
+    📁 lib/src/models/class_info.dart
+  }
+  class ClassInfo {
+    <<class>>
+    📁 lib/src/models/class_info.dart
+    String toString()
+  }
+  class RelationshipKind {
+    <<enumeration>>
+    📁 lib/src/models/relationship.dart
+  }
+  class DartParser {
+    <<class>>
+    📁 lib/src/parser/dart_parser.dart
+    Future<ParseResult> parseFiles(List<String> filePaths, String rootPath)
+  }
+  class _ClassVisitor {
+    <<class>>
+    📁 lib/src/parser/dart_parser.dart
+    void visitClassDeclaration(ClassDeclaration node)
+    void visitMixinDeclaration(MixinDeclaration node)
+    void visitEnumDeclaration(EnumDeclaration node)
+    void visitExtensionTypeDeclaration(ExtensionTypeDeclaration node)
+    String? _extractMethodSignature(MethodDeclaration node)
+    List<String> _extractTypeNames(TypeAnnotation typeAnnotation)
+  }
+  class FileWalker {
+    <<class>>
+    📁 lib/src/parser/file_walker.dart
+    Future<List<String>> walk(String rootPath)
+    Future<void> _walkDirectory(Directory dir, String rootPath, List<String> ignorePatterns, List<String> dartFiles)
+    List<String> _readParseIgnore(String rootPath)
+    bool _isIgnored(String relativePath, List<String> patterns)
+    bool _matchesGlob(String path, String pattern)
+  }
+  class MonorepoWalker {
+    <<class>>
+    📁 lib/src/parser/monorepo_walker.dart
+    Future<List<String>> findPackages(String rootPath)
+    Future<void> _findPackagesRecursive(Directory dir, String rootPath, List<String> packages, depth, maxDepth)
+    bool _shouldIgnoreDir(String dirPath)
+    Future<bool> isMonorepo(String rootPath)
+  }
+  class ParseIgnoreGenerator {
+    <<class>>
+    📁 lib/src/utils/parse_ignore_generator.dart
+    Future<bool> ensureParseIgnoreExists(String projectPath)
+  }
+  class ProjectDetector {
+    <<class>>
+    📁 lib/src/utils/project_detector.dart
+    Future<String?> getProjectName(String projectPath)
+    Future<String> getProjectNameOrDefault(String projectPath)
+    Future<String> createOutputDirectory(String projectPath)
+    Future<String> generateOutputFilePath(String projectPath, String format, useSubdirectory)
+  }
+  class String {
+    <<interface>>
+    📁 dart:core
+  }
+  class ListBase {
+    <<interface>>
+    📁 dart:collection
+  }
+  class List {
+    <<interface>>
+    📁 dart:core
+  }
+  class int {
+    <<interface>>
+    📁 dart:core
+  }
+  class Comparable {
+    <<interface>>
+    📁 dart:core
+  }
+  class Future {
+    <<interface>>
+    📁 dart:async
+  }
+  class Map {
+    <<interface>>
+    📁 dart:core
+  }
+  class bool {
+    <<interface>>
+    📁 dart:core
+  }
+
+  BaseEntity --> String : uses
+  BaseEntity <|-- User : extends
+  ClassInfo --> ClassKind : uses
+  ClassInfo --> List : uses
+  ClassInfo --> String : uses
+  Comparable <|.. User : implements
+  DartParser --> Future : uses
+  DartParser --> List : uses
+  DartParser --> ParseResult : uses
+  DartParser --> String : uses
+  FileWalker --> Future : uses
+  FileWalker --> List : uses
+  FileWalker --> String : uses
+  FileWalker --> bool : uses
+  HtmlGenerator --> ClassInfo : uses
+  HtmlGenerator --> List : uses
+  HtmlGenerator --> String : uses
+  ListBase <|-- SortedList : extends
+  MermaidGenerator --> ClassInfo : uses
+  MermaidGenerator --> List : uses
+  MermaidGenerator --> Map : uses
+  MermaidGenerator --> String : uses
+  MonorepoWalker --> Future : uses
+  MonorepoWalker --> List : uses
+  MonorepoWalker --> String : uses
+  MonorepoWalker --> bool : uses
+  ParseDart --> Future : uses
+  ParseDart --> ParseResult : uses
+  ParseDart --> String : uses
+  ParseIgnoreGenerator --> Future : uses
+  ParseIgnoreGenerator --> String : uses
+  ParseIgnoreGenerator --> bool : uses
+  ParseResult --> ClassInfo : uses
+  ParseResult --> Future : uses
+  ParseResult --> List : uses
+  ParseResult --> Map : uses
+  ParseResult --> String : uses
+  ProjectDetector --> Future : uses
+  ProjectDetector --> String : uses
+  RecursiveAstVisitor <|-- _ClassVisitor : extends
+  SortedList --> List : uses
+  SortedList --> int : uses
+  User --> String : uses
+  User --> User : uses
+  User --> int : uses
+  UserRepository --> List : uses
+  UserRepository --> SortedList : uses
+  UserRepository --> User : uses
+  UserRepository --> int : uses
+  _ClassVisitor --> ClassInfo : uses
+  _ClassVisitor --> List : uses
+  _ClassVisitor --> String : uses

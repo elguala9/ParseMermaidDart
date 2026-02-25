@@ -1,4 +1,4 @@
-# parse_dart
+# parse_mermaid_dart
 
 A Dart library that analyzes Dart projects and generates Mermaid class diagrams, extracting class relationships (extends, implements, with, uses) automatically.
 
@@ -19,18 +19,23 @@ A Dart library that analyzes Dart projects and generates Mermaid class diagrams,
   - Mixins
   - Enums
   - Extension types
-- **Mermaid Output**: Generates both:
+- **Mermaid Output**: Generates multiple formats:
   - `.mmd` files (Mermaid diagram syntax)
   - `.json` files (Mermaid Live Editor compatible)
+  - `.html` files (Interactive HTML with embedded Mermaid)
+  - `.png` files (Rendered diagrams via kroki.io)
+- **Interactive Comments**: Dart doc comments (`///`) automatically become clickable tooltips in diagrams
 - **Customizable**: Supports `.parseignore` file for excluding directories/files
 
 ## Installation
+
+### As a Library
 
 Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  parse_dart: ^0.1.0
+  parse_mermaid_dart: ^0.1.0
 ```
 
 Then run:
@@ -39,12 +44,99 @@ Then run:
 dart pub get
 ```
 
+### As a CLI Tool
+
+Install globally:
+
+```bash
+dart pub global activate parse_mermaid_dart
+```
+
+Then use the `parse` command from anywhere:
+
+```bash
+parse <path> [options]
+```
+
+## Interactive Comments
+
+Dart documentation comments (`///`) in your code automatically become **interactive click handlers** in generated diagrams!
+
+### How It Works
+
+When you document your classes with Dart doc comments:
+
+```dart
+/// Abstract base class for all animals
+abstract class Animal {
+  void makeSound();
+}
+
+/// A concrete dog class with special abilities
+class Dog extends Animal {
+  @override
+  void makeSound() => print('Woof!');
+}
+
+/// Repository for managing dogs
+class DogRepository {
+  Animal getAnimal() => Dog();
+}
+```
+
+These comments are automatically extracted and added to your diagrams as **interactive click handlers**. When you click on a class in the diagram, an alert shows the documentation comment.
+
+### Supported Formats
+
+The interactive comments appear in all output formats:
+
+- **`.mmd`** - Click handlers in Mermaid syntax: `click Dog "javascript:alert('/// A concrete dog class...')"`
+- **`.json`** - Mermaid JSON with click handlers (compatible with Mermaid Live Editor)
+- **`.html`** - Interactive HTML diagram with clickable classes showing comments
+- **`.png`** - PNG diagram (rendered cleanly without interactive handlers, but generated from documented classes)
+
+### Example Output
+
+Your `.mmd` file will include:
+
+```mermaid
+classDiagram
+  class Animal {
+    <<abstract>>
+  }
+  class Dog
+  class DogRepository
+
+  Animal <|-- Dog : extends
+  DogRepository --> Animal : uses
+
+  click Animal "javascript:alert('/// Abstract base class for all animals')"
+  click Dog "javascript:alert('/// A concrete dog class with special abilities')"
+  click DogRepository "javascript:alert('/// Repository for managing dogs')"
+```
+
+### What Gets Included
+
+✅ **Included in diagrams:**
+- Documentation comments using `///` (single line or multiple lines)
+- Documentation comments using `/** ... */` (block comments)
+
+❌ **Not included:**
+- Regular comments using `//` (these are only for code)
+
+### Tips
+
+1. **Document all your classes** - The more detailed your comments, the more useful your diagrams!
+2. **Use Mermaid Live Editor** - Copy your JSON output to [mermaid.live](https://mermaid.live) to get an interactive viewer
+3. **Open `.html` files in browser** - The HTML version provides the best interactive experience with clickable comments
+4. **Share diagrams** - The generated PNG files are perfect for documentation and presentations
+
 ## Usage
 
 ### Basic Usage
 
 ```dart
-import 'package:parse_dart/parse_dart.dart';
+import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
 
 void main() async {
   final parser = ParseDart('path/to/your/project');
@@ -66,6 +158,81 @@ void main() async {
 
 ### Command Line Usage
 
+#### Using the CLI Tool
+
+```bash
+# Analyze current directory (generate all formats)
+parse .
+
+# Analyze a specific project
+parse ~/my_dart_project
+
+# Analyze a monorepo with multiple packages
+parse . --monorepo
+
+# Generate only Mermaid diagram
+parse . --format mermaid
+
+# Generate specific format with custom output name
+parse . --format html --output my_architecture
+
+# Verbose output
+parse . --verbose
+
+# Show help
+parse --help
+```
+
+**Options:**
+- `--format <format>` - Output format: `mermaid`, `json`, `html`, `png`, or `all` (default)
+- `--output <name>` - Custom project name for output files (default: auto-detect from pubspec.yaml)
+- `--monorepo` - Analyze as a monorepo (finds and analyzes all packages in nested directories)
+- `--verbose` - Show detailed analysis output
+- `-h, --help` - Show help message
+- `-v, --version` - Show version
+
+**Output Location and Naming:**
+
+By default, all output files are saved to an `output/` folder in your current directory with this naming pattern:
+
+```
+output/
+├── <project-name>_parse_diagram.mmd      # Mermaid syntax
+├── <project-name>_parse_diagram.json     # Mermaid JSON (Live Editor compatible)
+├── <project-name>_parse_diagram.html     # Interactive HTML diagram
+└── <project-name>_parse_diagram.png      # Rendered PNG
+```
+
+The project name is automatically detected from `pubspec.yaml`. You can customize it with `--output`:
+
+```bash
+# Auto-detect from pubspec.yaml
+parse . --format all
+
+# Custom name
+parse . --output my_architecture --format html
+```
+
+**Monorepo Support:**
+
+The tool automatically scans for all packages (directories containing `pubspec.yaml`) and analyzes them together:
+
+```bash
+# For a monorepo with this structure:
+# monorepo/
+# ├── packages/
+# │   ├── package_a/pubspec.yaml
+# │   └── package_b/pubspec.yaml
+# └── services/
+#     └── shared_lib/pubspec.yaml
+
+parse . --monorepo
+```
+
+This will generate a single diagram showing all classes from all packages and their relationships. Works with any nesting depth!
+
+#### Using the Example Script
+
 ```bash
 dart run example/main.dart
 ```
@@ -85,10 +252,11 @@ ClassInfo(
   implementsList: ['Runnable'],
   withList: ['Swimmer', 'PetOwner'],
   usesList: [],
+  documentation: '/// A concrete dog class that demonstrates multiple relationships',
 )
 ```
 
-### Mermaid Diagram
+### Mermaid Diagram (with Interactive Comments)
 
 ```mermaid
 classDiagram
@@ -106,7 +274,14 @@ classDiagram
   Animal <|-- Dog : extends
   Runnable <|.. Dog : implements
   Swimmer <|.. Dog : with
+
+  click Animal "javascript:alert('/// Abstract base class for animals')"
+  click Dog "javascript:alert('/// A concrete dog class that demonstrates multiple relationships')"
+  click Runnable "javascript:alert('/// Abstract interface for things that can run')"
+  click Swimmer "javascript:alert('/// Mixin for animals that can swim')"
 ```
+
+**Click on a class name in the diagram above to see its documentation comment!**
 
 ## .parseignore
 
@@ -130,9 +305,9 @@ Default exclusions:
 ## Project Structure
 
 ```
-parse_dart/
+parse_mermaid_dart/
 ├── lib/
-│   ├── parse_dart.dart              # Public API entry point
+│   ├── parse_mermaid_dart.dart      # Public API entry point
 │   └── src/
 │       ├── models/
 │       │   ├── class_info.dart      # ClassInfo and ClassKind
@@ -212,6 +387,7 @@ class ClassInfo {
   final List<String> implementsList;
   final List<String> withList;        // Mixins or 'on' constraints
   final List<String> usesList;        // Classes used in fields
+  final String? documentation;        // Dart doc comments (///)
 }
 ```
 

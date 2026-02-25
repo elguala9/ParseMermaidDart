@@ -1,0 +1,12 @@
+# Ignore generated files
+*.g.dart
+*.freezed.dart
+
+# Ignore test directory
+test_files/**
+
+# Ignore node_modules style
+node_modules/**
+
+# Ignore specific file
+excluded.dart

@@ -45,6 +45,18 @@ class ClassInfo {
   /// List of class names used internally (detected from field types)
   final List<String> usesList;
 
+  /// List of method signatures in the class
+  final List<String> methodsList;
+
+  /// Documentation comment for the class, if present
+  final String? documentation;
+
+  /// Name of the outer class if this is an inner class, null otherwise
+  final String? nestedIn;
+
+  /// Whether this class is from an external library (not part of the project)
+  final bool isExternal;
+
   ClassInfo({
     required this.name,
     required this.filePath,
@@ -53,13 +65,18 @@ class ClassInfo {
     List<String>? implementsList,
     List<String>? withList,
     List<String>? usesList,
+    List<String>? methodsList,
+    this.documentation,
+    this.nestedIn,
+    this.isExternal = false,
   })  : implementsList = implementsList ?? [],
         withList = withList ?? [],
-        usesList = usesList ?? [];
+        usesList = usesList ?? [],
+        methodsList = methodsList ?? [];
 
   @override
   String toString() {
     return 'ClassInfo(name: $name, kind: $kind, extends: $extendsClass, '
-        'implements: $implementsList, with: $withList, uses: $usesList)';
+        'implements: $implementsList, with: $withList, uses: $usesList, methods: $methodsList, nestedIn: $nestedIn)';
   }
 }

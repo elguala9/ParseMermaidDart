@@ -19,4 +19,18 @@ class Dog extends Animal with Swimmer, PetOwner implements Runnable {
   void run() {
     print('Dog is running!');
   }
+
+  @override
+  void move() {
+    print('Dog is moving!');
+  }
+
+  @override
+  int getAge() {
+    return 5;
+  }
+
+  void fetch() {
+    print('Fetching...');
+  }
 }

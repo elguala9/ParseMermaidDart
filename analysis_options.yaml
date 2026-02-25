@@ -1,8 +1,10 @@
 include: package:lints/recommended.yaml
 
+analyzer:
+  exclude:
+    - test/fixtures/**
+    - lib/models/**
+
 linter:
   rules:
-    - camel_case_types
-    - camel_case_extensions
-    - library_names
-    - file_names
+    - prefer_relative_imports

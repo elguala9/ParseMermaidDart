@@ -1,0 +1,96 @@
+classDiagram
+  class Animal {
+    <<abstract>>
+    String name()
+    void makeSound()
+    void move()
+    int getAge()
+  }
+  class Dog {
+    void makeSound()
+    void run()
+    void move()
+    int getAge()
+    void fetch()
+  }
+  class Animal {
+    <<abstract>>
+  }
+  class Dog
+  class AnimalRepository {
+    List<Animal> getAll()
+    Dog? findByName(String name)
+  }
+  class A {
+    void methodA()
+  }
+  class B {
+    void methodB()
+  }
+  class C {
+    void methodC()
+  }
+  class PetOwner {
+    <<mixin>>
+    void adoptPet()
+    void feedPet()
+    void playWithPet()
+  }
+  class DogRepository {
+    void saveDog()
+    Dog? getDog()
+    List<Animal> getAllAnimals()
+    void deleteDog()
+  }
+  class Runnable {
+    <<interface>>
+    void run()
+  }
+  class Shape {
+    <<sealed>>
+    double area()
+  }
+  class Circle {
+    double area()
+  }
+  class Rect {
+    double area()
+  }
+  class Status {
+    <<enumeration>>
+    int compareTo(Status other)
+  }
+  class Swimmer {
+    <<mixin>>
+    void swim()
+  }
+
+  A <|-- B : extends
+  Animal <|-- Dog : extends
+  Animal <|.. Swimmer : with
+  AnimalRepository --> Animal : uses
+  AnimalRepository --> Dog : uses
+  B <|-- C : extends
+  Comparable <|.. Status : implements
+  DogRepository --> Animal : uses
+  DogRepository --> Dog : uses
+  PetOwner <|.. Dog : with
+  Runnable <|.. Dog : implements
+  Shape <|-- Circle : extends
+  Shape <|-- Rect : extends
+  Swimmer <|.. Dog : with
+
+  click Animal "javascript:alert('\/\/\/ Abstract base class for animals')"
+  click Dog "javascript:alert('\/\/\/ A concrete dog class that demonstrates multiple relationships')"
+  click AnimalRepository "javascript:alert('\/\/\/ Repository managing generic collections of animals')"
+  click A "javascript:alert('\/\/\/ Multi-level inheritance chain')"
+  click B "javascript:alert('\/\/\/ Class B extends A')"
+  click C "javascript:alert('\/\/\/ Class C extends B')"
+  click PetOwner "javascript:alert('\/\/\/ Mixin for things that can own pets')"
+  click DogRepository "javascript:alert('\/\/\/ Repository for dogs - demonstrates \"uses\" relationship')"
+  click Runnable "javascript:alert('\/\/\/ Abstract interface for things that can run')"
+  click Shape "javascript:alert('\/\/\/ Sealed class for shapes - can only be subclassed in this file')"
+  click Circle "javascript:alert('\/\/\/ Circle shape')"
+  click Rect "javascript:alert('\/\/\/ Rectangle shape')"
+  click Status "javascript:alert('\/\/\/ Status enum that implements Comparable')"
+  click Swimmer "javascript:alert('\/\/\/ Mixin for animals that can swim\n\/\/\/ Can only be mixed into classes that extend Animal')"

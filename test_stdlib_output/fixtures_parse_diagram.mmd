@@ -1,0 +1,89 @@
+classDiagram
+  class "Animal (test/fixtures/generic_repository.dart)" {
+    <<abstract>>
+    String name()
+    void makeSound()
+    void move()
+    int getAge()
+  }
+  class "Dog (test/fixtures/generic_repository.dart)" {
+    void makeSound()
+    void run()
+    void move()
+    int getAge()
+    void fetch()
+  }
+  class "Animal (test/fixtures/generic_repository.dart)" {
+    <<abstract>>
+  }
+  class "Dog (test/fixtures/generic_repository.dart)"
+  class "AnimalRepository (test/fixtures/generic_repository.dart)" {
+    List<Animal> getAll()
+    Dog? findByName(String name)
+  }
+  class "A (test/fixtures/multi_level.dart)" {
+    void methodA()
+  }
+  class "B (test/fixtures/multi_level.dart)" {
+    void methodB()
+  }
+  class "C (test/fixtures/multi_level.dart)" {
+    void methodC()
+  }
+  class "PetOwner (test/fixtures/pet_owner.dart)" {
+    <<mixin>>
+    void adoptPet()
+    void feedPet()
+    void playWithPet()
+  }
+  class "DogRepository (test/fixtures/repository.dart)" {
+    void saveDog()
+    Dog? getDog()
+    List<Animal> getAllAnimals()
+    void deleteDog()
+  }
+  class "Runnable (test/fixtures/runnable.dart)" {
+    <<interface>>
+    void run()
+  }
+  class "Shape (test/fixtures/sealed_shape.dart)" {
+    <<sealed>>
+    double area()
+  }
+  class "Circle (test/fixtures/sealed_shape.dart)" {
+    double area()
+  }
+  class "Rect (test/fixtures/sealed_shape.dart)" {
+    double area()
+  }
+  class "Status (test/fixtures/status_enum.dart)" {
+    <<enumeration>>
+    int compareTo(Status other)
+  }
+  class "Swimmer (test/fixtures/swimmer_mixin.dart)" {
+    <<mixin>>
+    void swim()
+  }
+  class "StringProcessor (test/fixtures/with_stdlib.dart)" {
+    String processString(String input)
+    List<String> splitLines(String text)
+    Future<String> fetchString()
+  }
+  class "CollectionHandler (test/fixtures/with_stdlib.dart)" {
+    void addItem(String name, int count)
+    Set<String> getAllItems()
+  }
+
+  "A (test/fixtures/multi_level.dart)" <|-- "B (test/fixtures/multi_level.dart)" : extends
+  "Animal (test/fixtures/generic_repository.dart)" <|-- "Dog (test/fixtures/generic_repository.dart)" : extends
+  "Animal (test/fixtures/generic_repository.dart)" <|.. "Swimmer (test/fixtures/swimmer_mixin.dart)" : with
+  "AnimalRepository (test/fixtures/generic_repository.dart)" --> "Animal (test/fixtures/generic_repository.dart)" : uses
+  "AnimalRepository (test/fixtures/generic_repository.dart)" --> "Dog (test/fixtures/generic_repository.dart)" : uses
+  "B (test/fixtures/multi_level.dart)" <|-- "C (test/fixtures/multi_level.dart)" : extends
+  "DogRepository (test/fixtures/repository.dart)" --> "Animal (test/fixtures/generic_repository.dart)" : uses
+  "DogRepository (test/fixtures/repository.dart)" --> "Dog (test/fixtures/generic_repository.dart)" : uses
+  "PetOwner (test/fixtures/pet_owner.dart)" <|.. "Dog (test/fixtures/generic_repository.dart)" : with
+  "Runnable (test/fixtures/runnable.dart)" <|.. "Dog (test/fixtures/generic_repository.dart)" : implements
+  "Shape (test/fixtures/sealed_shape.dart)" <|-- "Circle (test/fixtures/sealed_shape.dart)" : extends
+  "Shape (test/fixtures/sealed_shape.dart)" <|-- "Rect (test/fixtures/sealed_shape.dart)" : extends
+  "Swimmer (test/fixtures/swimmer_mixin.dart)" <|.. "Dog (test/fixtures/generic_repository.dart)" : with

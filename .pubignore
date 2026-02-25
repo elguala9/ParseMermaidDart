@@ -1,5 +1,7 @@
+# Exclude test directory (not needed for package users)
+test/
+
 # Exclude test output directories
-test/mermaid_output_parse/
 test_cleaned/
 test_external_libs/
 test_external_libs_fixed/

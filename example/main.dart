@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:parse_dart/parse_dart.dart';
+import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
 
 Future<void> main() async {
   // Analyze the test fixtures
@@ -33,9 +31,11 @@ Future<void> main() async {
   await result.saveMermaidFile('diagram.mmd');
   await result.saveJsonFile('diagram.json');
   await result.saveHtmlFile('diagram.html');
+  await result.savePngFile('diagram.png');
 
-  print('\n✓ Saved diagram.mmd, diagram.json, and diagram.html');
+  print('\n✓ Saved diagram.mmd, diagram.json, diagram.html, and diagram.png');
   print('\nVisualization options:');
   print('1. Open diagram.html in your browser (recommended)');
-  print('2. Copy content of diagram.mmd to https://mermaid.live');
+  print('2. Open diagram.png to view the rendered diagram');
+  print('3. Copy content of diagram.mmd to https://mermaid.live');
 }

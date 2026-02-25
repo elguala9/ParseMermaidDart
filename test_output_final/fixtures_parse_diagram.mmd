@@ -1,0 +1,133 @@
+classDiagram
+  class Animal_test_fixtures_generic_repository_dart {
+    <<abstract>>
+    String name()
+    void makeSound()
+    void move()
+    int getAge()
+  }
+  class Dog_test_fixtures_generic_repository_dart {
+    void makeSound()
+    void run()
+    void move()
+    int getAge()
+    void fetch()
+  }
+  class Animal_test_fixtures_generic_repository_dart {
+    <<abstract>>
+  }
+  class Dog_test_fixtures_generic_repository_dart
+  class AnimalRepository_test_fixtures_generic_repository_dart {
+    List<Animal> getAll()
+    Dog? findByName(String name)
+  }
+  class A_test_fixtures_multi_level_dart {
+    void methodA()
+  }
+  class B_test_fixtures_multi_level_dart {
+    void methodB()
+  }
+  class C_test_fixtures_multi_level_dart {
+    void methodC()
+  }
+  class PetOwner_test_fixtures_pet_owner_dart {
+    <<mixin>>
+    void adoptPet()
+    void feedPet()
+    void playWithPet()
+  }
+  class DogRepository_test_fixtures_repository_dart {
+    void saveDog()
+    Dog? getDog()
+    List<Animal> getAllAnimals()
+    void deleteDog()
+  }
+  class Runnable_test_fixtures_runnable_dart {
+    <<interface>>
+    void run()
+  }
+  class Shape_test_fixtures_sealed_shape_dart {
+    <<sealed>>
+    double area()
+  }
+  class Circle_test_fixtures_sealed_shape_dart {
+    double area()
+  }
+  class Rect_test_fixtures_sealed_shape_dart {
+    double area()
+  }
+  class Status_test_fixtures_status_enum_dart {
+    <<enumeration>>
+    int compareTo(Status other)
+  }
+  class Swimmer_test_fixtures_swimmer_mixin_dart {
+    <<mixin>>
+    void swim()
+  }
+  class StringProcessor_test_fixtures_with_stdlib_dart {
+    String processString(String input)
+    List<String> splitLines(String text)
+    Future<String> fetchString()
+  }
+  class CollectionHandler_test_fixtures_with_stdlib_dart {
+    void addItem(String name, int count)
+    Set<String> getAllItems()
+  }
+  class "String_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "int_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "List_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "Map_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "double_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "Comparable_test_fixtures_dart:core" {
+    <<interface>>
+  }
+  class "Future_test_fixtures_dart:async" {
+    <<interface>>
+  }
+  class "Set_test_fixtures_dart:core" {
+    <<interface>>
+  }
+
+  "Comparable_test_fixtures_dart:core" <|.. Status_test_fixtures_status_enum_dart : implements
+  A_test_fixtures_multi_level_dart <|-- B_test_fixtures_multi_level_dart : extends
+  AnimalRepository_test_fixtures_generic_repository_dart --> "List_test_fixtures_dart:core" : uses
+  AnimalRepository_test_fixtures_generic_repository_dart --> "Map_test_fixtures_dart:core" : uses
+  AnimalRepository_test_fixtures_generic_repository_dart --> "String_test_fixtures_dart:core" : uses
+  AnimalRepository_test_fixtures_generic_repository_dart --> Animal_test_fixtures_generic_repository_dart : uses
+  AnimalRepository_test_fixtures_generic_repository_dart --> Dog_test_fixtures_generic_repository_dart : uses
+  Animal_test_fixtures_generic_repository_dart --> "String_test_fixtures_dart:core" : uses
+  Animal_test_fixtures_generic_repository_dart --> "int_test_fixtures_dart:core" : uses
+  Animal_test_fixtures_generic_repository_dart <|-- Dog_test_fixtures_generic_repository_dart : extends
+  Animal_test_fixtures_generic_repository_dart <|.. Swimmer_test_fixtures_swimmer_mixin_dart : with
+  B_test_fixtures_multi_level_dart <|-- C_test_fixtures_multi_level_dart : extends
+  Circle_test_fixtures_sealed_shape_dart --> "double_test_fixtures_dart:core" : uses
+  CollectionHandler_test_fixtures_with_stdlib_dart --> "Map_test_fixtures_dart:core" : uses
+  CollectionHandler_test_fixtures_with_stdlib_dart --> "Set_test_fixtures_dart:core" : uses
+  CollectionHandler_test_fixtures_with_stdlib_dart --> "String_test_fixtures_dart:core" : uses
+  CollectionHandler_test_fixtures_with_stdlib_dart --> "int_test_fixtures_dart:core" : uses
+  DogRepository_test_fixtures_repository_dart --> "List_test_fixtures_dart:core" : uses
+  DogRepository_test_fixtures_repository_dart --> "String_test_fixtures_dart:core" : uses
+  DogRepository_test_fixtures_repository_dart --> Animal_test_fixtures_generic_repository_dart : uses
+  DogRepository_test_fixtures_repository_dart --> Dog_test_fixtures_generic_repository_dart : uses
+  Dog_test_fixtures_generic_repository_dart --> "String_test_fixtures_dart:core" : uses
+  Dog_test_fixtures_generic_repository_dart --> "int_test_fixtures_dart:core" : uses
+  PetOwner_test_fixtures_pet_owner_dart <|.. Dog_test_fixtures_generic_repository_dart : with
+  Rect_test_fixtures_sealed_shape_dart --> "double_test_fixtures_dart:core" : uses
+  Runnable_test_fixtures_runnable_dart <|.. Dog_test_fixtures_generic_repository_dart : implements
+  Shape_test_fixtures_sealed_shape_dart --> "double_test_fixtures_dart:core" : uses
+  Shape_test_fixtures_sealed_shape_dart <|-- Circle_test_fixtures_sealed_shape_dart : extends
+  Shape_test_fixtures_sealed_shape_dart <|-- Rect_test_fixtures_sealed_shape_dart : extends
+  StringProcessor_test_fixtures_with_stdlib_dart --> "Future_test_fixtures_dart:async" : uses
+  StringProcessor_test_fixtures_with_stdlib_dart --> "List_test_fixtures_dart:core" : uses
+  StringProcessor_test_fixtures_with_stdlib_dart --> "String_test_fixtures_dart:core" : uses
+  Swimmer_test_fixtures_swimmer_mixin_dart <|.. Dog_test_fixtures_generic_repository_dart : with

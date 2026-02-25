@@ -3,4 +3,8 @@ abstract class Animal {
   String get name;
 
   void makeSound();
+
+  void move();
+
+  int getAge();
 }

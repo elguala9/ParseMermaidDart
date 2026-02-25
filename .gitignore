@@ -19,6 +19,7 @@ build/
 diagram.mmd
 diagram.json
 test/output/
+test/mermaid_output_parse/
 
 # OS
 .DS_Store

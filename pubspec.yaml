@@ -1,6 +1,13 @@
-name: parse_dart
-description: Analyzes Dart projects and generates Mermaid class diagrams.
+name: parse_mermaid_dart
+description: Analyzes Dart projects and generates Mermaid class diagrams from source code, detecting inheritance, interfaces, mixins, and dependencies.
 version: 0.1.0
+
+publish_to: https://pub.dev
+
+homepage: https://github.com/parresia-dev/parse_mermaid_dart
+repository: https://github.com/parresia-dev/parse_mermaid_dart
+issue_tracker: https://github.com/parresia-dev/parse_mermaid_dart/issues
+documentation: https://github.com/parresia-dev/parse_mermaid_dart/blob/main/README.md
 
 environment:
   sdk: ^3.4.0
@@ -8,8 +15,21 @@ environment:
 dependencies:
   analyzer: ^6.0.0
   glob: ^2.1.2
+  http: ^1.1.0
   path: ^1.9.0
+  yaml: ^3.1.0
 
 dev_dependencies:
   lints: ^3.0.0
   test: ^1.25.0
+  equatable: ^2.0.5
+  freezed_annotation: ^2.4.1
+  json_serializable: ^6.7.0
+
+executables:
+  parse: parse
+
+platforms:
+  linux:
+  macos:
+  windows:

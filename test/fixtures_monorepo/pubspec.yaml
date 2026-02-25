@@ -1,0 +1,6 @@
+name: monorepo_root
+description: Root of a monorepo structure for testing.
+version: 0.1.0
+
+environment:
+  sdk: ^3.4.0

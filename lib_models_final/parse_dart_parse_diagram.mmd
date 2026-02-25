@@ -1,0 +1,168 @@
+classDiagram
+  class "BaseEntity (lib\models\base_entity.dart)" {
+    <<abstract>>
+    String id()
+    String toString()
+  }
+  class "SortedList (lib\models\sorted_list.dart)" {
+    int length()
+    void length(int newLength)
+    T [](int index)
+    void []=(int index, T value)
+    void add(T value)
+    void _sort()
+  }
+  class "User (lib\models\user.dart)" {
+    String id()
+    int compareTo(User other)
+    String toString()
+  }
+  class "UserRepository (lib\models\user_repository.dart)" {
+    void addUser(User user)
+    List<User> getAllUsers()
+    User? findByAge(int age)
+  }
+  class "ParseDart (lib\parse_dart.dart)" {
+    Future<ParseResult> analyze()
+    Future<ParseResult> analyzeMonorepo()
+  }
+  class "ParseResult (lib\parse_dart.dart)" {
+    String toMermaid()
+    String toMermaidForPng()
+    Map<String, dynamic> toMermaidJson()
+    Future<void> saveMermaidFile(String outputPath)
+    Future<void> saveJsonFile(String outputPath)
+    String toHtml()
+    Future<void> saveHtmlFile(String outputPath)
+    Future<void> savePngFile(String outputPath)
+  }
+  class "HtmlGenerator (lib\src\generator\html_generator.dart)" {
+    String generateHtml(List<ClassInfo> classes)
+  }
+  class "MermaidGenerator (lib\src\generator\mermaid_generator.dart)" {
+    String generate(List<ClassInfo> classes, projectPath)
+    String _generateBaseCode(List<ClassInfo> classes)
+    String _generateCode(List<ClassInfo> classes, includeFilePath, projectPath)
+    String generateForPng(List<ClassInfo> classes)
+    Map<String, dynamic> generateJson(List<ClassInfo> classes, projectPath)
+    String _getStereotype(dynamic kind)
+    String _escapeName(String name)
+  }
+  class "ClassKind (lib\src\models\class_info.dart)" {
+    <<enumeration>>
+  }
+  class "ClassInfo (lib\src\models\class_info.dart)" {
+    String toString()
+  }
+  class "RelationshipKind (lib\src\models\relationship.dart)" {
+    <<enumeration>>
+  }
+  class "DartParser (lib\src\parser\dart_parser.dart)" {
+    Future<ParseResult> parseFiles(List<String> filePaths, String rootPath)
+  }
+  class "_ClassVisitor (lib\src\parser\dart_parser.dart)" {
+    void visitClassDeclaration(ClassDeclaration node)
+    void visitMixinDeclaration(MixinDeclaration node)
+    void visitEnumDeclaration(EnumDeclaration node)
+    void visitExtensionTypeDeclaration(ExtensionTypeDeclaration node)
+    String? _extractMethodSignature(MethodDeclaration node)
+    List<String> _extractTypeNames(TypeAnnotation typeAnnotation)
+  }
+  class "FileWalker (lib\src\parser\file_walker.dart)" {
+    Future<List<String>> walk(String rootPath)
+    Future<void> _walkDirectory(Directory dir, String rootPath, List<String> ignorePatterns, List<String> dartFiles)
+    List<String> _readParseIgnore(String rootPath)
+    bool _isIgnored(String relativePath, List<String> patterns)
+    bool _matchesGlob(String path, String pattern)
+  }
+  class "MonorepoWalker (lib\src\parser\monorepo_walker.dart)" {
+    Future<List<String>> findPackages(String rootPath)
+    Future<void> _findPackagesRecursive(Directory dir, String rootPath, List<String> packages, depth, maxDepth)
+    bool _shouldIgnoreDir(String dirPath)
+    Future<bool> isMonorepo(String rootPath)
+  }
+  class "ParseIgnoreGenerator (lib\src\utils\parse_ignore_generator.dart)" {
+    Future<bool> ensureParseIgnoreExists(String projectPath)
+  }
+  class "ProjectDetector (lib\src\utils\project_detector.dart)" {
+    Future<String?> getProjectName(String projectPath)
+    Future<String> getProjectNameOrDefault(String projectPath)
+    Future<String> createOutputDirectory(String projectPath)
+    Future<String> generateOutputFilePath(String projectPath, String format, useSubdirectory)
+  }
+  class "String (dart:core)" {
+    <<interface>>
+  }
+  class "ListBase (dart:collection)" {
+    <<interface>>
+  }
+  class "List (dart:core)" {
+    <<interface>>
+  }
+  class "int (dart:core)" {
+    <<interface>>
+  }
+  class "Comparable (dart:core)" {
+    <<interface>>
+  }
+  class "Future (dart:async)" {
+    <<interface>>
+  }
+  class "Map (dart:core)" {
+    <<interface>>
+  }
+  class "bool (dart:core)" {
+    <<interface>>
+  }
+
+  "BaseEntity (lib\models\base_entity.dart)" --> "String (dart:core)" : uses
+  "BaseEntity (lib\models\base_entity.dart)" <|-- "User (lib\models\user.dart)" : extends
+  "ClassInfo (lib\src\models\class_info.dart)" --> "ClassKind (lib\src\models\class_info.dart)" : uses
+  "ClassInfo (lib\src\models\class_info.dart)" --> "List (dart:core)" : uses
+  "ClassInfo (lib\src\models\class_info.dart)" --> "String (dart:core)" : uses
+  "Comparable (dart:core)" <|.. "User (lib\models\user.dart)" : implements
+  "DartParser (lib\src\parser\dart_parser.dart)" --> "Future (dart:async)" : uses
+  "DartParser (lib\src\parser\dart_parser.dart)" --> "List (dart:core)" : uses
+  "DartParser (lib\src\parser\dart_parser.dart)" --> "ParseResult (lib\parse_dart.dart)" : uses
+  "DartParser (lib\src\parser\dart_parser.dart)" --> "String (dart:core)" : uses
+  "FileWalker (lib\src\parser\file_walker.dart)" --> "Future (dart:async)" : uses
+  "FileWalker (lib\src\parser\file_walker.dart)" --> "List (dart:core)" : uses
+  "FileWalker (lib\src\parser\file_walker.dart)" --> "String (dart:core)" : uses
+  "FileWalker (lib\src\parser\file_walker.dart)" --> "bool (dart:core)" : uses
+  "HtmlGenerator (lib\src\generator\html_generator.dart)" --> "ClassInfo (lib\src\models\class_info.dart)" : uses
+  "HtmlGenerator (lib\src\generator\html_generator.dart)" --> "List (dart:core)" : uses
+  "HtmlGenerator (lib\src\generator\html_generator.dart)" --> "String (dart:core)" : uses
+  "ListBase (dart:collection)" <|-- "SortedList (lib\models\sorted_list.dart)" : extends
+  "MermaidGenerator (lib\src\generator\mermaid_generator.dart)" --> "ClassInfo (lib\src\models\class_info.dart)" : uses
+  "MermaidGenerator (lib\src\generator\mermaid_generator.dart)" --> "List (dart:core)" : uses
+  "MermaidGenerator (lib\src\generator\mermaid_generator.dart)" --> "Map (dart:core)" : uses
+  "MermaidGenerator (lib\src\generator\mermaid_generator.dart)" --> "String (dart:core)" : uses
+  "MonorepoWalker (lib\src\parser\monorepo_walker.dart)" --> "Future (dart:async)" : uses
+  "MonorepoWalker (lib\src\parser\monorepo_walker.dart)" --> "List (dart:core)" : uses
+  "MonorepoWalker (lib\src\parser\monorepo_walker.dart)" --> "String (dart:core)" : uses
+  "MonorepoWalker (lib\src\parser\monorepo_walker.dart)" --> "bool (dart:core)" : uses
+  "ParseDart (lib\parse_dart.dart)" --> "Future (dart:async)" : uses
+  "ParseDart (lib\parse_dart.dart)" --> "ParseResult (lib\parse_dart.dart)" : uses
+  "ParseDart (lib\parse_dart.dart)" --> "String (dart:core)" : uses
+  "ParseIgnoreGenerator (lib\src\utils\parse_ignore_generator.dart)" --> "Future (dart:async)" : uses
+  "ParseIgnoreGenerator (lib\src\utils\parse_ignore_generator.dart)" --> "String (dart:core)" : uses
+  "ParseIgnoreGenerator (lib\src\utils\parse_ignore_generator.dart)" --> "bool (dart:core)" : uses
+  "ParseResult (lib\parse_dart.dart)" --> "ClassInfo (lib\src\models\class_info.dart)" : uses
+  "ParseResult (lib\parse_dart.dart)" --> "Future (dart:async)" : uses
+  "ParseResult (lib\parse_dart.dart)" --> "List (dart:core)" : uses
+  "ParseResult (lib\parse_dart.dart)" --> "Map (dart:core)" : uses
+  "ParseResult (lib\parse_dart.dart)" --> "String (dart:core)" : uses
+  "ProjectDetector (lib\src\utils\project_detector.dart)" --> "Future (dart:async)" : uses
+  "ProjectDetector (lib\src\utils\project_detector.dart)" --> "String (dart:core)" : uses
+  "SortedList (lib\models\sorted_list.dart)" --> "List (dart:core)" : uses
+  "SortedList (lib\models\sorted_list.dart)" --> "int (dart:core)" : uses
+  "User (lib\models\user.dart)" --> "String (dart:core)" : uses
+  "User (lib\models\user.dart)" --> "User (lib\models\user.dart)" : uses
+  "User (lib\models\user.dart)" --> "int (dart:core)" : uses
+  "UserRepository (lib\models\user_repository.dart)" --> "List (dart:core)" : uses
+  "UserRepository (lib\models\user_repository.dart)" --> "SortedList (lib\models\sorted_list.dart)" : uses
+  "UserRepository (lib\models\user_repository.dart)" --> "User (lib\models\user.dart)" : uses
+  "UserRepository (lib\models\user_repository.dart)" --> "int (dart:core)" : uses
+  "_ClassVisitor (lib\src\parser\dart_parser.dart)" --> "ClassInfo (lib\src\models\class_info.dart)" : uses
+  "_ClassVisitor (lib\src\parser\dart_parser.dart)" --> "List (dart:core)" : uses
+  "_ClassVisitor (lib\src\parser\dart_parser.dart)" --> "String (dart:core)" : uses

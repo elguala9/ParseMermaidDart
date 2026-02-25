@@ -1,3 +1,5 @@
+import 'package:path/path.dart' as p;
+
 import '../models/class_info.dart';
 
 /// Generates Mermaid class diagrams from ClassInfo objects.
@@ -21,12 +23,8 @@ class MermaidGenerator {
     final nameToDisplayPath = <String, String>{};
     for (final classInfo in classes) {
       if (includeFilePath) {
-        // If projectPath is provided and is not '.', prepend it to get the full path
-        String displayPath = classInfo.filePath.replaceAll('\\', '/');
-        if (projectPath != null && projectPath != '.' && !displayPath.startsWith(projectPath)) {
-          final normalizedProjectPath = projectPath.replaceAll('\\', '/');
-          displayPath = '$normalizedProjectPath/$displayPath';
-        }
+        // Use only the filename to reduce diagram size (e.g., "dog.dart" instead of "path/to/dog.dart")
+        final displayPath = p.basename(classInfo.filePath);
         nameToDisplayPath[classInfo.name] = displayPath;
       }
     }

@@ -38,7 +38,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  diagram_dart: ^0.2.0
+  diagram_dart: ^0.1.0
 ```
 
 Then run:

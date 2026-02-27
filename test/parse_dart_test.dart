@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
-import 'package:parse_mermaid_dart/src/parser/file_walker.dart';
-import 'package:parse_mermaid_dart/src/parser/monorepo_walker.dart';
+import 'package:diagram_dart/diagram_dart.dart';
+import 'package:diagram_dart/src/parser/file_walker.dart';
+import 'package:diagram_dart/src/parser/monorepo_walker.dart';
 import 'package:test/test.dart';
 
 void main() {

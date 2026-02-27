@@ -21,6 +21,8 @@ diagram.json
 test/output/
 test/mermaid_output_parse/
 
+test_ermes*
+
 # OS
 .DS_Store
 Thumbs.db

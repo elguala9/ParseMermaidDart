@@ -235,7 +235,16 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitClassDeclaration(ClassDeclaration node) {
-    final name = node.name.lexeme;
+    var name = node.name.lexeme;
+
+    // Add generic type parameters to class name if present
+    if (node.typeParameters != null && node.typeParameters!.typeParameters.isNotEmpty) {
+      final typeParams = node.typeParameters!.typeParameters
+          .map((tp) => tp.name.lexeme)
+          .join(', ');
+      name = '$name<$typeParams>';
+    }
+
     final relativePath = p.relative(filePath, from: rootPath);
 
     // Track nested classes
@@ -429,13 +438,20 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       }
     }
 
-    // Extract methods
+    // Extract methods and field types for uses relationships
     final methodsList = <String>[];
+    final usesList = <String>[];
     for (final member in node.members) {
       if (member is MethodDeclaration) {
         final methodSignature = _extractMethodSignature(member);
         if (methodSignature != null) {
           methodsList.add(methodSignature);
+        }
+      } else if (member is FieldDeclaration) {
+        // Extract types from field declarations
+        final fieldType = member.fields.type;
+        if (fieldType != null) {
+          usesList.addAll(_extractTypeNames(fieldType));
         }
       }
     }
@@ -455,6 +471,7 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       kind: ClassKind.enumKind,
       implementsList: implementsList,
       methodsList: methodsList,
+      usesList: usesList,
       documentation: documentation,
     );
 
@@ -466,8 +483,98 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
   @override
   // ignore: experimental_member_use
   void visitExtensionTypeDeclaration(ExtensionTypeDeclaration node) {
+
+  @override
+  // ignore: unused_element
+  void visitClassTypeAlias(ClassTypeAlias node) {
     final name = node.name.lexeme;
     final relativePath = p.relative(filePath, from: rootPath);
+
+    // Extract the superclass (what this alias extends)
+    final extendsClass = node.superclass.name2.lexeme;
+
+    // Extract with clause (mixins)
+    final withList = <String>[];
+    // ignore: unnecessary_null_comparison
+    if (node.withClause != null) {
+      // ignore: unnecessary_non_null_assertion
+      for (final mixin in node.withClause!.mixinTypes) {
+        withList.add(mixin.name2.lexeme);
+      }
+    }
+
+    // Extract implements clause
+    final implementsList = <String>[];
+    if (node.implementsClause != null) {
+      for (final interface in node.implementsClause!.interfaces) {
+        implementsList.add(interface.name2.lexeme);
+      }
+    }
+
+    // Extract documentation comment
+    String? documentation;
+    if (node.documentationComment != null) {
+      final tokens = node.documentationComment!.tokens;
+      if (tokens.isNotEmpty) {
+        documentation = tokens.map((t) => t.lexeme).join('\n');
+      }
+    }
+
+    final classInfo = ClassInfo(
+      name: name,
+      filePath: relativePath,
+      kind: ClassKind.classKind,
+      extendsClass: extendsClass,
+      withList: withList,
+      implementsList: implementsList,
+      documentation: documentation,
+    );
+
+    classes.add(classInfo);
+
+    super.visitClassTypeAlias(node);
+  }
+    final name = node.name.lexeme;
+    final relativePath = p.relative(filePath, from: rootPath);
+
+    // Extract implements clause
+    final implementsList = <String>[];
+    if (node.implementsClause != null) {
+      for (final interface in node.implementsClause!.interfaces) {
+        implementsList.add(interface.name2.lexeme);
+      }
+    }
+
+    // Extract methods and field types
+    final methodsList = <String>[];
+    final usesList = <String>[];
+    for (final member in node.members) {
+      if (member is MethodDeclaration) {
+        final methodSignature = _extractMethodSignature(member);
+        if (methodSignature != null) {
+          methodsList.add(methodSignature);
+        }
+        // Extract types from method return type and parameters
+        if (member.returnType != null) {
+          final returnTypes = _extractTypeNames(member.returnType!);
+          usesList.addAll(returnTypes);
+        }
+        if (member.parameters != null) {
+          for (final param in member.parameters!.parameters) {
+            if (param is SimpleFormalParameter && param.type != null) {
+              final paramTypes = _extractTypeNames(param.type!);
+              usesList.addAll(paramTypes);
+            }
+          }
+        }
+      } else if (member is FieldDeclaration) {
+        // Extract types from field declarations
+        final fieldType = member.fields.type;
+        if (fieldType != null) {
+          usesList.addAll(_extractTypeNames(fieldType));
+        }
+      }
+    }
 
     // Extract documentation comment
     String? documentation;
@@ -482,6 +589,9 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       name: name,
       filePath: relativePath,
       kind: ClassKind.extensionType,
+      implementsList: implementsList,
+      methodsList: methodsList,
+      usesList: usesList,
       documentation: documentation,
     );
 
@@ -507,7 +617,11 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
   List<String> _extractTypeNames(TypeAnnotation typeAnnotation) {
     final names = <String>[];
     if (typeAnnotation is NamedType) {
-      names.add(typeAnnotation.name2.lexeme);
+      final typeName = typeAnnotation.name2.lexeme;
+      // Filter out built-in types and type variables
+      if (!_isBuiltInOrTypeVariable(typeName)) {
+        names.add(typeName);
+      }
       final typeArgs = typeAnnotation.typeArguments;
       if (typeArgs != null) {
         for (final arg in typeArgs.arguments) {
@@ -516,5 +630,49 @@ class _ClassVisitor extends RecursiveAstVisitor<void> {
       }
     }
     return names;
+  }
+
+  /// Check if a type is a built-in Dart type or a type variable.
+  bool _isBuiltInOrTypeVariable(String typeName) {
+    // Built-in Dart types
+    final builtInTypes = {
+      'void', 'dynamic', 'Object', 'String', 'int', 'double', 'bool', 'num',
+      'Null', 'Never',
+      // Collections
+      'List', 'Map', 'Set', 'Queue', 'HashMap', 'LinkedHashMap', 'SplayTreeMap',
+      'HashSet', 'LinkedHashSet', 'SplayTreeSet',
+      // Async
+      'Future', 'FutureOr', 'Stream', 'Sink', 'StreamSink',
+      // Core interfaces
+      'Comparable', 'Iterable', 'Iterator', 'Pattern', 'RegExp', 'Exception',
+      'Error', 'Stacktrace', 'Uri', 'Duration', 'DateTime', 'DateTimeRange',
+      // Collections and utilities
+      'LinkedList', 'UnmodifiableListView', 'UnmodifiableMapView',
+      'UnmodifiableSetView', 'IdentityHashMap',
+    };
+
+    // Check if it's a known built-in type (case-insensitive to catch variations)
+    if (builtInTypes.contains(typeName)) {
+      return true;
+    }
+
+    // Common abbreviations that are NOT type variables
+    final commonAbbreviations = {
+      'IO', 'UI', 'DB', 'API', 'URL', 'HTTP', 'JSON', 'XML', 'HTML', 'CSS',
+      'JWT', 'OAuth', 'SQL', 'PDF', 'CSV', 'UUID', 'SHA', 'MD5', 'AWS', 'GCP',
+      'CLI', 'REST', 'CRUD', 'MVC', 'MVP', 'MVVM', 'ORM', 'DAL', 'BLL',
+    };
+
+    if (commonAbbreviations.contains(typeName)) {
+      return false; // Not a type variable, it's an abbreviation
+    }
+
+    // Check if it's a type variable (single uppercase letter only)
+    // Type variables are typically: T, U, E, K, V, D, R, etc. (single letters)
+    if (typeName.length == 1 && typeName == typeName.toUpperCase()) {
+      return true;
+    }
+
+    return false;
   }
 }

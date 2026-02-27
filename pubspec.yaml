@@ -1,6 +1,6 @@
 name: parse_mermaid_dart
 description: Analyzes Dart projects and generates Mermaid class diagrams from source code, detecting inheritance, interfaces, mixins, and dependencies.
-version: 0.1.1
+version: 0.2.0
 
 homepage: https://github.com/elguala9/ParseMermaidDart
 repository: https://github.com/elguala9/ParseMermaidDart

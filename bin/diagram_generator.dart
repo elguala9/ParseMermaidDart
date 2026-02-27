@@ -1,9 +1,9 @@
 #!/usr/bin/env dart
 import 'dart:io';
 
-import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
-import 'package:parse_mermaid_dart/src/utils/parse_ignore_generator.dart';
-import 'package:parse_mermaid_dart/src/utils/project_detector.dart';
+import 'package:diagram_dart/diagram_dart.dart';
+import 'package:diagram_dart/src/utils/parse_ignore_generator.dart';
+import 'package:diagram_dart/src/utils/project_detector.dart';
 
 void main(List<String> args) async {
   try {
@@ -13,7 +13,7 @@ void main(List<String> args) async {
     }
 
     if (args.contains('--version') || args.contains('-v')) {
-      print('parse_mermaid_dart version 0.1.0');
+      print('diagram_dart version 0.2.0');
       return;
     }
 
@@ -434,9 +434,9 @@ Future<bool> _isDotAvailable() async {
 
 void printHelp() {
   print('''
-📊 parse_dart - Generate Class Diagrams from Dart Projects
+📊 diagram_dart - Generate Class Diagrams from Dart Projects
 
-Usage: parse [options]
+Usage: diagram_generator [options]
 
 Options:
   --input <path>        Path to the Dart project to analyze (default: .)
@@ -457,61 +457,61 @@ Options:
 
 Examples:
   # Analyze current directory
-  parse
+  diagram_generator
 
   # Analyze specific project
-  parse --input ~/my_dart_project
+  diagram_generator --input ~/my_dart_project
 
   # Customize output directory and filename prefix
-  parse --input . --output-dir ./diagrams --prefix my_name
+  diagram_generator --input . --output-dir ./diagrams --prefix my_name
 
   # Generate only Mermaid diagram
-  parse --input . --format mermaid
+  diagram_generator --input . --format mermaid
 
   # Generate Graphviz DOT diagram
-  parse --input . --format graphviz
+  diagram_generator --input . --format graphviz
 
   # Generate interactive Graphviz HTML
-  parse --input . --format graphviz_html
+  diagram_generator --input . --format graphviz_html
 
   # Analyze monorepo with custom settings
-  parse --input . --monorepo --output-dir ./my_diagrams --prefix monorepo_diagrams --verbose
+  diagram_generator --input . --monorepo --output-dir ./my_diagrams --prefix monorepo_diagrams --verbose
 
   # Generate separate diagrams for each package in a monorepo
-  parse --input . --per-package
+  diagram_generator --input . --per-package
 
   # Generate separate diagrams with all formats
-  parse --input . --per-package --format all
+  diagram_generator --input . --per-package --format all
 
   # Generate separate diagrams excluding private members
-  parse --input . --per-package --no-private --format mermaid
+  diagram_generator --input . --per-package --no-private --format mermaid
 
   # Exclude private methods to reduce diagram size
-  parse --input . --no-private
+  diagram_generator --input . --no-private
 
   # Exclude all methods (show only class names)
-  parse --input . --no-methods
+  diagram_generator --input . --no-methods
 
   # Exclude external libraries (for large projects)
-  parse --input . --no-external
+  diagram_generator --input . --no-external
 
   # Combine filters to minimize diagram
-  parse --input . --no-private --no-external --format html
+  diagram_generator --input . --no-private --no-external --format html
 
   # Show only class hierarchy without methods
-  parse --input . --no-methods --format mermaid
+  diagram_generator --input . --no-methods --format mermaid
 
   # Generate Graphviz with default layout (fdp)
-  parse --input . --format graphviz
+  diagram_generator --input . --format graphviz
 
   # Generate with specific layout
-  parse --input . --format graphviz --layout sfdp
+  diagram_generator --input . --format graphviz --layout sfdp
 
   # Generate multiple layouts at once
-  parse --input . --format graphviz --layout fdp sfdp
+  diagram_generator --input . --format graphviz --layout fdp sfdp
 
   # Generate all layouts
-  parse --input . --format graphviz --layout dot neato fdp sfdp circo twopi
+  diagram_generator --input . --format graphviz --layout dot neato fdp sfdp circo twopi
 
 Output:
   Files are saved to subdirectories within the output directory:
@@ -548,6 +548,6 @@ Note:
   • The tool respects .parseignore files in the project root
   • Project name is auto-detected from pubspec.yaml
 
-Learn more: https://github.com/your-repo/parse_dart
+Learn more: https://github.com/elguala9/ParseMermaidDart
 ''');
 }

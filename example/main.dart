@@ -1,4 +1,4 @@
-import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
+import 'package:diagram_dart/diagram_dart.dart';
 
 Future<void> main() async {
   // Analyze the test fixtures

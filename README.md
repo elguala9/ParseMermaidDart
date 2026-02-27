@@ -1,6 +1,6 @@
-# parse_mermaid_dart
+# diagram_dart
 
-A Dart library that analyzes Dart projects and generates Mermaid class diagrams, extracting class relationships (extends, implements, with, uses) automatically.
+A Dart library that analyzes Dart projects and generates diagram from source code, extracting class relationships (extends, implements, with, uses) automatically.
 
 ## Features
 
@@ -38,7 +38,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  parse_mermaid_dart: ^0.1.0
+  diagram_dart: ^0.2.0
 ```
 
 Then run:
@@ -52,13 +52,13 @@ dart pub get
 Install globally:
 
 ```bash
-dart pub global activate parse_mermaid_dart
+dart pub global activate diagram_dart
 ```
 
-Then use the `parse` command from anywhere:
+Then use the `diagram_generator` command from anywhere:
 
 ```bash
-parse <path> [options]
+diagram_generator <path> [options]
 ```
 
 ### Updating the CLI Tool
@@ -66,19 +66,19 @@ parse <path> [options]
 To update to the latest version:
 
 ```bash
-dart pub global activate parse_mermaid_dart
+dart pub global activate diagram_dart
 ```
 
 This command automatically upgrades to the newest version. To update to a specific version:
 
 ```bash
-dart pub global activate parse_mermaid_dart 0.1.1
+dart pub global activate diagram_dart 0.1.1
 ```
 
 To check the currently installed version:
 
 ```bash
-parse --version
+diagram_generator --version
 ```
 
 ## Interactive Comments
@@ -159,7 +159,7 @@ classDiagram
 ### Basic Usage
 
 ```dart
-import 'package:parse_mermaid_dart/parse_mermaid_dart.dart';
+import 'package:diagram_dart/diagram_dart.dart';
 
 void main() async {
   final parser = ParseDart('path/to/your/project');
@@ -185,34 +185,34 @@ void main() async {
 
 ```bash
 # Analyze current directory (generate all formats)
-parse .
+diagram_generator.
 
 # Analyze a specific project
-parse ~/my_dart_project
+diagram_generator~/my_dart_project
 
 # Analyze a monorepo with multiple packages
-parse . --monorepo
+diagram_generator. --monorepo
 
 # Generate only Mermaid diagram
-parse . --format mermaid
+diagram_generator. --format mermaid
 
 # Generate specific format with custom output name
-parse . --format html --prefix my_architecture
+diagram_generator. --format html --prefix my_architecture
 
 # Verbose output
-parse . --verbose
+diagram_generator. --verbose
 
 # Exclude private methods (reduce diagram size)
-parse . --no-private
+diagram_generator. --no-private
 
 # Exclude external libraries (great for large projects)
-parse . --no-external
+diagram_generator. --no-external
 
 # Combine filters for minimal diagram
-parse . --no-private --no-external --format html
+diagram_generator. --no-private --no-external --format html
 
 # Show help
-parse --help
+diagram_generator--help
 ```
 
 **Options:**
@@ -243,13 +243,13 @@ The project name is automatically detected from `pubspec.yaml`. You can customiz
 
 ```bash
 # Auto-detect from pubspec.yaml
-parse . --format all
+diagram_generator. --format all
 
 # Custom name and directory
-parse . --prefix my_architecture --output-dir ./diagrams --format html
+diagram_generator. --prefix my_architecture --output-dir ./diagrams --format html
 
 # Different output directory
-parse . --output-dir ./build/diagrams
+diagram_generator. --output-dir ./build/diagrams
 ```
 
 **Monorepo Support:**
@@ -265,7 +265,7 @@ The tool automatically scans for all packages (directories containing `pubspec.y
 # └── services/
 #     └── shared_lib/pubspec.yaml
 
-parse . --monorepo
+diagram_generator. --monorepo
 ```
 
 This will generate a single diagram showing all classes from all packages and their relationships. Works with any nesting depth!
@@ -377,7 +377,7 @@ Large diagrams (26KB+) may exceed Mermaid's default rendering limit. This tool a
 **Option 1: Exclude All Private Elements**
 
 ```bash
-parse . --no-private
+diagram_generator. --no-private
 ```
 
 Removes all private classes and methods (anything starting with `_`) to focus on public API:
@@ -395,7 +395,7 @@ classDiagram
 **Option 2: Exclude External Libraries**
 
 ```bash
-parse . --no-external
+diagram_generator. --no-external
 ```
 
 Removes stdlib and third-party library classes (like `List`, `Map`, `Equatable`, etc.) to show only your project's classes:
@@ -406,7 +406,7 @@ After: Only your internal classes (typically 3-5x smaller)
 **Option 3: Combine Both Filters (Recommended)**
 
 ```bash
-parse . --no-private --no-external --format html
+diagram_generator. --no-private --no-external --format html
 ```
 
 For ErmesDart and similar large projects, this typically reduces diagram size by 50-80%.
@@ -415,19 +415,19 @@ For ErmesDart and similar large projects, this typically reduces diagram size by
 
 ```bash
 # All details
-parse . --format html
+diagram_generator. --format html
 # Output: ~350KB diagram
 
 # No private methods
-parse . --no-private --format html
+diagram_generator. --no-private --format html
 # Output: ~300KB diagram
 
 # No external classes
-parse . --no-external --format html
+diagram_generator. --no-external --format html
 # Output: ~150KB diagram
 
 # Minimal diagram (recommended for large projects)
-parse . --no-private --no-external --format html
+diagram_generator. --no-private --no-external --format html
 # Output: ~50-100KB diagram
 ```
 
@@ -593,13 +593,13 @@ Copy the JSON output to [mermaid.live](https://mermaid.live) to visualize the di
 **Examples:**
 ```bash
 # Minimal diagram for large projects
-parse . --no-private --no-external
+diagram_generator. --no-private --no-external
 
 # Focus on public API
-parse . --no-private
+diagram_generator. --no-private
 
 # Internal architecture without external noise
-parse . --no-external
+diagram_generator. --no-external
 ```
 
 ### v0.1.0 - Initial Release

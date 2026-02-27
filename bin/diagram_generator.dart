@@ -13,7 +13,7 @@ void main(List<String> args) async {
     }
 
     if (args.contains('--version') || args.contains('-v')) {
-      print('diagram_dart version 0.2.0');
+      print('diagram_dart version 0.1.0');
       return;
     }
 

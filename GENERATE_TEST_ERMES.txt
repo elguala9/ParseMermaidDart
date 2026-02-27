@@ -1,0 +1,17 @@
+Generate Mermaid diagram from ErmesDart project
+================================================
+
+Command to generate diagram output from ErmesDart into test_ermes_output/:
+
+dart run bin/parse.dart --input ../ErmesDart --output-dir ./test_ermes_output --prefix ermes --verbose --per-package --no-methods
+
+Output files will be created in ./test_ermes_output/:
+  - ermes_parse_diagram.mmd (Mermaid diagram source)
+  - ermes_parse_diagram.json (Structure data)
+  - ermes_parse_diagram.html (Interactive visualization - recommended!)
+  - ermes_parse_diagram.png (PNG image)
+
+View the diagram:
+  1. Open ermes_parse_diagram.html in your browser (recommended)
+  2. Or view ermes_parse_diagram.png
+  3. Or copy ermes_parse_diagram.mmd content to https://mermaid.live

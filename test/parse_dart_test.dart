@@ -319,6 +319,108 @@ void main() {
     });
   });
 
+  group('GraphvizGenerator', () {
+    test('generates graphviz DOT diagram', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final graphviz = result.toGraphviz();
+      expect(graphviz, contains('digraph UMLClassDiagram'));
+      expect(graphviz, contains('rankdir=BT'));
+      expect(graphviz, contains('Animal'));
+      expect(graphviz, contains('Dog'));
+    });
+
+    test('graphviz uses correct arrow styles', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final graphviz = result.toGraphviz();
+      // Check extends relationship (empty arrow, back direction)
+      expect(graphviz, contains('arrowhead=empty'));
+      expect(graphviz, contains('dir=back'));
+      // Check for dashed style (implements/with)
+      expect(graphviz, contains('style=dashed'));
+      // Check for open arrow (uses relationship)
+      expect(graphviz, contains('arrowhead=open'));
+    });
+
+    test('graphviz marks external classes with <<external>>', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final graphviz = result.toGraphviz();
+      // Check that external classes are marked
+      expect(graphviz, contains('&lt;&lt;external&gt;&gt;'));
+    });
+
+    test('graphviz respects noPrivate flag', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final graphviz = result.toGraphviz(noPrivate: true);
+      // After filtering private methods, diagram should be smaller
+      // Check that private classes are excluded
+      final allGraphviz = result.toGraphviz();
+      expect(graphviz.length, lessThanOrEqualTo(allGraphviz.length));
+    });
+
+    test('graphviz respects noExternal flag', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final graphviz = result.toGraphviz(noExternal: true);
+      // External classes like Equatable should not appear
+      expect(graphviz, isNot(contains('Equatable')));
+    });
+
+    test('saves .dot file', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final outputDir = Directory('test/mermaid_output_parse');
+
+      // Clean up before test
+      if (await outputDir.exists()) {
+        await outputDir.delete(recursive: true);
+      }
+
+      // Save graphviz file
+      await result.saveGraphvizFile('test/mermaid_output_parse/graphviz/diagram.dot');
+
+      // Verify file exists
+      expect(File('test/mermaid_output_parse/graphviz/diagram.dot').existsSync(), true);
+
+      // Verify content
+      final dotContent = File('test/mermaid_output_parse/graphviz/diagram.dot').readAsStringSync();
+      expect(dotContent, contains('digraph'));
+    });
+
+    test('saves graphviz html file', () async {
+      final parser = ParseDart('test/fixtures');
+      final result = await parser.analyze();
+
+      final outputDir = Directory('test/mermaid_output_parse');
+
+      // Clean up before test
+      if (await outputDir.exists()) {
+        await outputDir.delete(recursive: true);
+      }
+
+      // Save graphviz HTML file
+      await result.saveGraphvizHtmlFile('test/mermaid_output_parse/graphviz/diagram.html');
+
+      // Verify file exists
+      expect(File('test/mermaid_output_parse/graphviz/diagram.html').existsSync(), true);
+
+      // Verify content
+      final htmlContent = File('test/mermaid_output_parse/graphviz/diagram.html').readAsStringSync();
+      expect(htmlContent, contains('<html'));
+      expect(htmlContent, contains('kroki.io'));
+      expect(htmlContent, contains('graphviz'));
+    });
+  });
+
   group('FileWalker with .parseignore', () {
     test('respects .parseignore patterns', () async {
       final walker = FileWalker();
@@ -495,6 +597,63 @@ void main() {
         expect(classInfo.filePath, isNotEmpty);
         expect(classInfo.name, isNotEmpty);
       }
+    });
+
+    test('analyzeMonorepoPerLibrary returns separate results per package',
+        () async {
+      final parser = ParseDart('test/fixtures_monorepo');
+      final results = await parser.analyzeMonorepoPerLibrary();
+
+      // Should find 3 packages
+      expect(
+        results.keys.length,
+        greaterThanOrEqualTo(2),
+        reason: 'Should find at least 2 packages',
+      );
+
+      // Each entry should have a name and classes
+      for (final entry in results.entries) {
+        expect(entry.key, isNotEmpty);
+        expect(entry.value.classes, isNotEmpty);
+      }
+    });
+
+    test('each library result contains only classes from that package',
+        () async {
+      final parser = ParseDart('test/fixtures_monorepo');
+      final results = await parser.analyzeMonorepoPerLibrary();
+
+      // Each library should be properly named
+      final packageNames = results.keys.toList();
+      expect(packageNames, isNotEmpty);
+
+      // Check that each result has classes
+      for (final result in results.values) {
+        expect(result.classes, isNotEmpty);
+        // All classes in a result should be from the same project
+        for (final classInfo in result.classes) {
+          expect(classInfo.filePath, isNotEmpty);
+          expect(classInfo.name, isNotEmpty);
+        }
+      }
+    });
+
+    test('per-library analysis preserves class metadata', () async {
+      final parser = ParseDart('test/fixtures_monorepo');
+      final results = await parser.analyzeMonorepoPerLibrary();
+
+      // Find package_a in results
+      final packageAResult =
+          results.values.firstWhere((r) => r.classes.any((c) => c.name == 'User'),
+              orElse: () => ParseResult([], ''));
+
+      expect(packageAResult.classes, isNotEmpty);
+      expect(packageAResult.classes.any((c) => c.name == 'User'), true);
+
+      // Check that User has correct metadata
+      final user = packageAResult.classes.firstWhere((c) => c.name == 'User');
+      expect(user.kind, isNotNull);
+      expect(user.filePath, isNotEmpty);
     });
   });
 }

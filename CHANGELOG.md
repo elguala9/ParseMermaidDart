@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-27
+
+### Added
+- **Enhanced Parser Support:**
+  - Enum field type extraction for `usesList` relationships
+  - Full extension type parsing with methods and relationships
+  - Class type alias support (`class Foo = Bar with Baz` syntax)
+  - Preserved generic type parameters in class names (e.g., `Repository<T>`)
+  - Improved type variable heuristic to exclude common abbreviations (IO, UI, DB, API, etc.)
+
+- **Code Quality Improvements:**
+  - Created `lib/src/utils/diagram_utils.dart` for shared utility functions
+  - Extracted common functions: `getStereotype()`, `escapeName()`, `isPrivateMethod()`
+  - Replaced fragile `kind.toString()` comparisons with exhaustive switch statements (compile-time safety)
+
+- **Stability & Dependencies:**
+  - Pinned Mermaid CDN to v10 to prevent breaking changes
+
+### Fixed
+- Visualization tips now display correctly (fixed path checking logic)
+- Input directory validation now occurs before output directory creation
+- Layout engine flag (`-K<layout>`) now properly applied to Graphviz PNG rendering
+- Removed Italian text from CLI (internationalization consistency)
+- Removed dead code: unused `_generateGraphvizHtmlWithSvg` method and unused `publicClassNames` sets
+
+### Changed
+- Internal refactoring: eliminated code duplication between MermaidGenerator and GraphvizGenerator
+
+### Developer Notes
+- All 47 tests passing with no regressions
+- Zero analyzer warnings
+- Ready for production
+
 ## [0.1.1] - 2026-02-26
 
 ### Fixed

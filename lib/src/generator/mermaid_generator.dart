@@ -1,21 +1,22 @@
 import 'package:path/path.dart' as p;
 
 import '../models/class_info.dart';
+import '../utils/diagram_utils.dart';
 
 /// Generates Mermaid class diagrams from ClassInfo objects.
 class MermaidGenerator {
   /// Generate a Mermaid class diagram string with file paths.
-  String generate(List<ClassInfo> classes, {String? projectPath}) {
-    return _generateCode(classes, includeFilePath: true, projectPath: projectPath);
+  String generate(List<ClassInfo> classes, {String? projectPath, bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+    return _generateCode(classes, includeFilePath: true, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
   }
 
   /// Generate Mermaid code for PNG rendering (without file paths to avoid kroki.io parsing issues).
-  String _generateBaseCode(List<ClassInfo> classes) {
-    return _generateCode(classes, includeFilePath: false);
+  String _generateBaseCode(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+    return _generateCode(classes, includeFilePath: false, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
   }
 
   /// Generate Mermaid code with optional file path information.
-  String _generateCode(List<ClassInfo> classes, {required bool includeFilePath, String? projectPath}) {
+  String _generateCode(List<ClassInfo> classes, {required bool includeFilePath, String? projectPath, bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
     final buffer = StringBuffer();
     buffer.writeln('classDiagram');
 
@@ -31,12 +32,30 @@ class MermaidGenerator {
 
     // Add class definitions with annotations
     for (final classInfo in classes) {
-      buffer.write('  class ${_escapeName(classInfo.name)}');
+      // Skip external classes if noExternal is true
+      if (noExternal && classInfo.isExternal) {
+        continue;
+      }
+
+      // Skip private classes if noPrivate is true
+      if (noPrivate && classInfo.name.startsWith('_')) {
+        continue;
+      }
+
+      buffer.write('  class ${escapeName(classInfo.name)}');
 
       // Add stereotypes and methods if present
-      final kindStereotype = _getStereotype(classInfo.kind);
+      final kindStereotype = getStereotype(classInfo.kind);
       final displayPath = includeFilePath ? nameToDisplayPath[classInfo.name] : null;
-      final hasMethods = classInfo.methodsList.isNotEmpty;
+
+      // Filter private methods if noPrivate is true, or all methods if noMethods is true
+      final filteredMethods = noMethods
+          ? <String>[]
+          : (noPrivate
+              ? classInfo.methodsList.where((m) => !isPrivateMethod(m)).toList()
+              : classInfo.methodsList);
+
+      final hasMethods = filteredMethods.isNotEmpty;
 
       if (kindStereotype.isNotEmpty || displayPath != null || hasMethods || classInfo.isExternal) {
         buffer.write(' {\n');
@@ -52,7 +71,7 @@ class MermaidGenerator {
         if (displayPath != null) {
           buffer.write('    📁 $displayPath\n');
         }
-        for (final method in classInfo.methodsList) {
+        for (final method in filteredMethods) {
           buffer.write('    $method\n');
         }
         buffer.write('  }');
@@ -64,35 +83,91 @@ class MermaidGenerator {
     // Add relationships
     buffer.writeln();
 
+    // Build a set of internal class names for filtering relationships
+    final internalClassNames = <String>{};
+    if (noExternal) {
+      for (final classInfo in classes) {
+        if (!classInfo.isExternal) {
+          internalClassNames.add(classInfo.name);
+        }
+      }
+    }
+
     // Collect all relationships
     final relationships = <String>[];
 
     for (final classInfo in classes) {
+      // Skip relationships for external classes if noExternal is true
+      if (noExternal && classInfo.isExternal) {
+        continue;
+      }
+
+      // Skip relationships for private classes if noPrivate is true
+      if (noPrivate && classInfo.name.startsWith('_')) {
+        continue;
+      }
+
       final className = classInfo.name;
 
       // Extends relationship
       if (classInfo.extendsClass != null) {
-        relationships.add('${_escapeName(classInfo.extendsClass!)} <|-- ${_escapeName(className)} : extends');
+        bool shouldInclude = true;
+        if (noExternal && !internalClassNames.contains(classInfo.extendsClass!)) {
+          shouldInclude = false;
+        }
+        if (noPrivate && classInfo.extendsClass!.startsWith('_')) {
+          shouldInclude = false;
+        }
+        if (shouldInclude) {
+          relationships.add('${escapeName(classInfo.extendsClass!)} <|-- ${escapeName(className)} : extends');
+        }
       }
 
       // Implements relationships
       for (final interface in classInfo.implementsList) {
-        relationships.add('${_escapeName(interface)} <|.. ${_escapeName(className)} : implements');
+        bool shouldInclude = true;
+        if (noExternal && !internalClassNames.contains(interface)) {
+          shouldInclude = false;
+        }
+        if (noPrivate && interface.startsWith('_')) {
+          shouldInclude = false;
+        }
+        if (shouldInclude) {
+          relationships.add('${escapeName(interface)} <|.. ${escapeName(className)} : implements');
+        }
       }
 
       // With relationships (mixins)
       for (final mixin in classInfo.withList) {
-        relationships.add('${_escapeName(mixin)} <|.. ${_escapeName(className)} : with');
+        bool shouldInclude = true;
+        if (noExternal && !internalClassNames.contains(mixin)) {
+          shouldInclude = false;
+        }
+        if (noPrivate && mixin.startsWith('_')) {
+          shouldInclude = false;
+        }
+        if (shouldInclude) {
+          relationships.add('${escapeName(mixin)} <|.. ${escapeName(className)} : with');
+        }
       }
 
       // Uses relationships
       for (final used in classInfo.usesList) {
-        relationships.add('${_escapeName(className)} --> ${_escapeName(used)} : uses');
+        bool shouldInclude = true;
+        if (noExternal && !internalClassNames.contains(used)) {
+          shouldInclude = false;
+        }
+        if (noPrivate && used.startsWith('_')) {
+          shouldInclude = false;
+        }
+        if (shouldInclude) {
+          relationships.add('${escapeName(className)} --> ${escapeName(used)} : uses');
+        }
       }
 
       // Nested class relationships
       if (classInfo.nestedIn != null) {
-        relationships.add('${_escapeName(className)} --> ${_escapeName(classInfo.nestedIn!)} : nested_in');
+        relationships.add('${escapeName(className)} --> ${escapeName(classInfo.nestedIn!)} : nested_in');
       }
     }
 
@@ -106,45 +181,18 @@ class MermaidGenerator {
   }
 
   /// Generate Mermaid code suitable for PNG rendering (without click handlers).
-  String generateForPng(List<ClassInfo> classes) {
-    return _generateBaseCode(classes);
+  String generateForPng(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+    return _generateBaseCode(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
   }
 
   /// Generate JSON compatible with Mermaid Live Editor.
-  Map<String, dynamic> generateJson(List<ClassInfo> classes, {String? projectPath}) {
+  Map<String, dynamic> generateJson(List<ClassInfo> classes, {String? projectPath, bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
     return {
-      'code': generate(classes, projectPath: projectPath),
+      'code': generate(classes, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods),
       'mermaid': {
         'theme': 'default',
       },
       'updateEditor': false,
     };
   }
-
-  /// Get the stereotype annotation for a class kind.
-  String _getStereotype(dynamic kind) {
-    if (kind.toString() == 'ClassKind.abstractClass') {
-      return '<<abstract>>';
-    } else if (kind.toString() == 'ClassKind.mixin') {
-      return '<<mixin>>';
-    } else if (kind.toString() == 'ClassKind.interfaceClass') {
-      return '<<interface>>';
-    } else if (kind.toString() == 'ClassKind.sealedClass') {
-      return '<<sealed>>';
-    } else if (kind.toString() == 'ClassKind.enumKind') {
-      return '<<enumeration>>';
-    } else if (kind.toString() == 'ClassKind.extensionType') {
-      return '<<extension>>';
-    }
-    // Default for regular class
-    return '<<class>>';
-  }
-
-  /// Escape a class name for Mermaid syntax.
-  /// Replace special characters with underscores for Mermaid compatibility.
-  String _escapeName(String name) {
-    // Replace special characters (including $) with underscores
-    return name.replaceAll(RegExp(r'[^\w]'), '_');
-  }
-
 }

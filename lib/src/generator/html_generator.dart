@@ -4,9 +4,9 @@ import 'mermaid_generator.dart';
 /// Generates HTML visualization of Mermaid diagrams.
 class HtmlGenerator {
   /// Generate HTML with embedded Mermaid diagram.
-  String generateHtml(List<ClassInfo> classes) {
+  String generateHtml(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
     final mermaidGenerator = MermaidGenerator();
-    final diagramCode = mermaidGenerator.generate(classes);
+    final diagramCode = mermaidGenerator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
 
     return '''<!DOCTYPE html>
 <html lang="en">
@@ -14,7 +14,7 @@ class HtmlGenerator {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dart Class Diagram</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -141,7 +141,7 @@ $diagramCode
     </footer>
 
     <script>
-        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        mermaid.initialize({ startOnLoad: true, theme: 'default', maxTextSize: 500000 });
         mermaid.contentLoaded();
     </script>
 </body>

@@ -228,7 +228,7 @@ class ParseResult {
   /// Save Graphviz SVG file.
   Future<void> saveGraphvizSvgFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) async {
     final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
-    final svg = await _renderGraphvizToSvg(dotCode);
+    final svg = await _renderGraphvizToSvg(dotCode, layout: layout);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
     await file.writeAsString(svg);
@@ -239,7 +239,7 @@ class ParseResult {
     final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
 
     try {
-      final png = await _renderGraphvizToPng(dotCode);
+      final png = await _renderGraphvizToPng(dotCode, layout: layout);
       final file = File(outputPath);
       await file.parent.create(recursive: true);
       await file.writeAsBytes(png);
@@ -249,8 +249,8 @@ class ParseResult {
   }
 
   /// Render Graphviz DOT to SVG using system 'dot' command.
-  Future<String> _renderGraphvizToSvg(String dotCode) async {
-    final process = await Process.start('dot', ['-Tsvg']);
+  Future<String> _renderGraphvizToSvg(String dotCode, {String layout = 'dot'}) async {
+    final process = await Process.start('dot', ['-K$layout', '-Tsvg']);
     process.stdin.write(dotCode);
     await process.stdin.close();
 
@@ -265,8 +265,8 @@ class ParseResult {
   }
 
   /// Render Graphviz DOT to PNG using system 'dot' command.
-  Future<List<int>> _renderGraphvizToPng(String dotCode) async {
-    final process = await Process.start('dot', ['-Tpng']);
+  Future<List<int>> _renderGraphvizToPng(String dotCode, {String layout = 'dot'}) async {
+    final process = await Process.start('dot', ['-K$layout', '-Tpng']);
     process.stdin.write(dotCode);
     await process.stdin.close();
 
@@ -278,184 +278,6 @@ class ParseResult {
     }
 
     return output;
-  }
-
-  /// Generate HTML with embedded SVG.
-  String _generateGraphvizHtmlWithSvg(String svgContent) {
-    return '''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dart Class Diagram (Graphviz)</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .diagram-wrapper {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            overflow-x: auto;
-        }
-
-        .diagram-wrapper svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .info {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f0f7ff;
-            border-left: 4px solid #667eea;
-            border-radius: 4px;
-            color: #333;
-        }
-
-        .info h3 {
-            margin-bottom: 10px;
-            color: #667eea;
-        }
-
-        .info p {
-            margin: 8px 0;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .info code {
-            background: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            color: #d63384;
-        }
-
-        .legend {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .legend-arrow {
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .legend-label {
-            font-size: 13px;
-            color: #333;
-        }
-
-        footer {
-            margin-top: 30px;
-            text-align: center;
-            color: #999;
-            font-size: 12px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>📊 Dart Class Diagram (Graphviz)</h1>
-        <div class="subtitle">Generated by parse_mermaid_dart using Graphviz DOT format</div>
-
-        <div class="diagram-wrapper">
-            $svgContent
-        </div>
-
-        <div class="info">
-            <h3>Diagram Legend</h3>
-            <p>
-                <strong>Arrow Types:</strong>
-            </p>
-            <div class="legend">
-                <div class="legend-item">
-                    <span class="legend-arrow">─▷ (solid)</span>
-                    <span class="legend-label">extends (inheritance)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-arrow">─ ▷ (dashed)</span>
-                    <span class="legend-label">implements (interface)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-arrow">─ ▷ (dashed)</span>
-                    <span class="legend-label">with (mixin)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-arrow">─▶</span>
-                    <span class="legend-label">uses (field type)</span>
-                </div>
-                <div class="legend-item">
-                    <span class="legend-arrow">─◇</span>
-                    <span class="legend-label">nestedIn (nested class)</span>
-                </div>
-            </div>
-            <p style="margin-top: 15px;">
-                <strong>Class Annotations:</strong><br>
-                • <code>&lt;&lt;abstract&gt;&gt;</code> = Abstract class<br>
-                • <code>&lt;&lt;interface&gt;&gt;</code> = Interface class<br>
-                • <code>&lt;&lt;sealed&gt;&gt;</code> = Sealed class<br>
-                • <code>&lt;&lt;mixin&gt;&gt;</code> = Mixin<br>
-                • <code>&lt;&lt;enumeration&gt;&gt;</code> = Enum<br>
-                • <code>&lt;&lt;extension&gt;&gt;</code> = Extension<br>
-                • <code>&lt;&lt;external&gt;&gt;</code> = External library class
-            </p>
-        </div>
-    </div>
-
-    <footer>
-        <p>Generated by parse_mermaid_dart • Graphviz DOT rendering via local 'dot' command</p>
-    </footer>
-</body>
-</html>''';
   }
 
   /// Fallback HTML generation using kroki.io.

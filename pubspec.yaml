@@ -1,6 +1,6 @@
 name: diagram_dart
 description: Analyzes Dart projects and generates diagrams from source code, detecting inheritance, interfaces, mixins, and dependencies.
-version: 0.1.0
+version: 0.4.0
 
 homepage: https://github.com/elguala9/ParseMermaidDart
 repository: https://github.com/elguala9/ParseMermaidDart

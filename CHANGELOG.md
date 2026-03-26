@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-03-26
+
+### Added
+- **Relationship Type Filter (`--only-relations`)**:
+  - New CLI flag `--only-relations <types>` to show only specific relationship types
+  - Accepted values (comma-separated): `extends`, `implements`, `with`, `uses`, `nested`
+  - Default behavior (flag absent): all relationship types shown — fully backward compatible
+  - Works with all output formats: mermaid, json, html, png, graphviz, dot, graphviz_html, graphviz_png
+  - Composes with existing filters (`--no-private`, `--no-external`, `--no-methods`)
+  - Available as `onlyRelations` parameter on all `ParseResult` API methods
+
+### Examples
+```bash
+# Show only inheritance hierarchy
+diagram_generator . --only-relations extends
+
+# Show only interface and mixin relationships
+diagram_generator . --only-relations implements,with
+
+# Show only dependency arrows
+diagram_generator . --only-relations uses
+
+# Combine with other filters
+diagram_generator . --only-relations extends,implements --no-external --format html
+```
+
 ## [0.1.0] - 2026-02-27
 
 ### Added

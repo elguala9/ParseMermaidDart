@@ -4,9 +4,9 @@ import 'mermaid_generator.dart';
 /// Generates HTML visualization of Mermaid diagrams.
 class HtmlGenerator {
   /// Generate HTML with embedded Mermaid diagram.
-  String generateHtml(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+  String generateHtml(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) {
     final mermaidGenerator = MermaidGenerator();
-    final diagramCode = mermaidGenerator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+    final diagramCode = mermaidGenerator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
 
     return '''<!DOCTYPE html>
 <html lang="en">

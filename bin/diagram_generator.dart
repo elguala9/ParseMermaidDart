@@ -13,7 +13,7 @@ void main(List<String> args) async {
     }
 
     if (args.contains('--version') || args.contains('-v')) {
-      print('diagram_dart version 0.1.0');
+      print('diagram_dart version 0.4.0');
       return;
     }
 
@@ -28,6 +28,7 @@ void main(List<String> args) async {
     var noPrivate = false;
     var noExternal = false;
     var noMethods = false;
+    Set<String>? onlyRelations;
     final layoutsSpec = <String>[]; // layouts specified by user
 
     for (int i = 0; i < args.length; i++) {
@@ -61,6 +62,8 @@ void main(List<String> args) async {
         noExternal = true;
       } else if (arg == '--no-methods') {
         noMethods = true;
+      } else if (arg == '--only-relations' && i + 1 < args.length) {
+        onlyRelations = args[++i].split(',').map((s) => s.trim().toLowerCase()).toSet();
       } else if (i == 0 && !arg.startsWith('--')) {
         // Legacy support: first positional argument as input path
         projectPath = arg;
@@ -171,19 +174,19 @@ void main(List<String> args) async {
 
             switch (format) {
               case 'mermaid':
-                await libResult.saveMermaidFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+                await libResult.saveMermaidFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
                 allSavedFiles.add('$subDir/$libName/$filename');
                 if (verbose) print('    ✓ Saved $subDir/$libName/$filename');
               case 'json':
-                await libResult.saveJsonFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+                await libResult.saveJsonFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
                 allSavedFiles.add('$subDir/$libName/$filename');
                 if (verbose) print('    ✓ Saved $subDir/$libName/$filename');
               case 'html':
-                await libResult.saveHtmlFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+                await libResult.saveHtmlFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
                 allSavedFiles.add('$subDir/$libName/$filename');
                 if (verbose) print('    ✓ Saved $subDir/$libName/$filename');
               case 'png':
-                await libResult.savePngFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+                await libResult.savePngFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
                 allSavedFiles.add('$subDir/$libName/$filename');
                 if (verbose) print('    ✓ Saved $subDir/$libName/$filename');
               case 'graphviz' || 'dot':
@@ -191,7 +194,7 @@ void main(List<String> args) async {
                 for (final currentLayout in layoutsToUse) {
                   final layoutFilename = '${libPrefix}_parse_diagram_$currentLayout.dot';
                   final layoutFilepath = '$outputDir/$subDir/$libName/$layoutFilename';
-                  await libResult.saveGraphvizFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                  await libResult.saveGraphvizFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                   allSavedFiles.add('$subDir/$libName/$layoutFilename');
                   if (verbose) print('    ✓ Saved $subDir/$libName/$layoutFilename');
 
@@ -199,7 +202,7 @@ void main(List<String> args) async {
                   final pngLayoutFilename = '${libPrefix}_parse_diagram_$currentLayout.png';
                   final pngLayoutFilepath = '$outputDir/$subDir/$libName/$pngLayoutFilename';
                   try {
-                    await libResult.saveGraphvizPngFile(pngLayoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                    await libResult.saveGraphvizPngFile(pngLayoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                     allSavedFiles.add('$subDir/$libName/$pngLayoutFilename');
                     if (verbose) print('    ✓ Saved $subDir/$libName/$pngLayoutFilename');
                   } catch (pngError) {
@@ -211,7 +214,7 @@ void main(List<String> args) async {
                 for (final currentLayout in layoutsToUse) {
                   final layoutFilename = '${libPrefix}_parse_diagram_$currentLayout.html';
                   final layoutFilepath = '$outputDir/$subDir/$libName/$layoutFilename';
-                  await libResult.saveGraphvizHtmlFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                  await libResult.saveGraphvizHtmlFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                   allSavedFiles.add('$subDir/$libName/$layoutFilename');
                   if (verbose) print('    ✓ Saved $subDir/$libName/$layoutFilename');
                 }
@@ -221,7 +224,7 @@ void main(List<String> args) async {
                   final layoutFilename = '${libPrefix}_parse_diagram_$currentLayout.png';
                   final layoutFilepath = '$outputDir/$subDir/$libName/$layoutFilename';
                   try {
-                    await libResult.saveGraphvizPngFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                    await libResult.saveGraphvizPngFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                     allSavedFiles.add('$subDir/$libName/$layoutFilename');
                     if (verbose) print('    ✓ Saved $subDir/$libName/$layoutFilename');
                   } catch (pngError) {
@@ -321,19 +324,19 @@ void main(List<String> args) async {
 
         switch (format) {
           case 'mermaid':
-            await result.saveMermaidFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+            await result.saveMermaidFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
             savedFiles.add('$subDir/$filename');
             if (verbose) print('  ✓ Saved $subDir/$filename');
           case 'json':
-            await result.saveJsonFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+            await result.saveJsonFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
             savedFiles.add('$subDir/$filename');
             if (verbose) print('  ✓ Saved $subDir/$filename');
           case 'html':
-            await result.saveHtmlFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+            await result.saveHtmlFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
             savedFiles.add('$subDir/$filename');
             if (verbose) print('  ✓ Saved $subDir/$filename');
           case 'png':
-            await result.savePngFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+            await result.savePngFile(filepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
             savedFiles.add('$subDir/$filename');
             if (verbose) print('  ✓ Saved $subDir/$filename');
           case 'graphviz' || 'dot':
@@ -341,7 +344,7 @@ void main(List<String> args) async {
             for (final currentLayout in layoutsToUse) {
               final layoutFilename = '${prefix}_parse_diagram_$currentLayout.dot';
               final layoutFilepath = '$outputDir/$subDir/$layoutFilename';
-              await result.saveGraphvizFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+              await result.saveGraphvizFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
               savedFiles.add('$subDir/$layoutFilename');
               if (verbose) print('  ✓ Saved $subDir/$layoutFilename');
 
@@ -349,7 +352,7 @@ void main(List<String> args) async {
               final pngLayoutFilename = '${prefix}_parse_diagram_$currentLayout.png';
               final pngLayoutFilepath = '$outputDir/$subDir/$pngLayoutFilename';
               try {
-                await result.saveGraphvizPngFile(pngLayoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                await result.saveGraphvizPngFile(pngLayoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                 savedFiles.add('$subDir/$pngLayoutFilename');
                 if (verbose) print('  ✓ Saved $subDir/$pngLayoutFilename');
               } catch (pngError) {
@@ -361,7 +364,7 @@ void main(List<String> args) async {
             for (final currentLayout in layoutsToUse) {
               final layoutFilename = '${prefix}_parse_diagram_$currentLayout.html';
               final layoutFilepath = '$outputDir/$subDir/$layoutFilename';
-              await result.saveGraphvizHtmlFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+              await result.saveGraphvizHtmlFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
               savedFiles.add('$subDir/$layoutFilename');
               if (verbose) print('  ✓ Saved $subDir/$layoutFilename');
             }
@@ -371,7 +374,7 @@ void main(List<String> args) async {
               final layoutFilename = '${prefix}_parse_diagram_$currentLayout.png';
               final layoutFilepath = '$outputDir/$subDir/$layoutFilename';
               try {
-                await result.saveGraphvizPngFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout);
+                await result.saveGraphvizPngFile(layoutFilepath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: currentLayout, onlyRelations: onlyRelations);
                 savedFiles.add('$subDir/$layoutFilename');
                 if (verbose) print('  ✓ Saved $subDir/$layoutFilename');
               } catch (pngError) {
@@ -451,6 +454,10 @@ Options:
   --no-private          Exclude all private elements (classes and methods starting with _)
   --no-external         Exclude external classes (stdlib and third-party libraries) from diagram
   --no-methods          Exclude all methods from class definitions
+  --only-relations <types>  Show only the specified relation types (comma-separated).
+                        Values: extends, implements, with, uses, nested
+                        Default: all relation types shown
+                        Example: --only-relations extends,implements
   --verbose             Show detailed analysis output
   -h, --help           Show this help message
   -v, --version        Show version information

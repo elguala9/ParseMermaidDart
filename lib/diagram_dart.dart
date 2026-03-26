@@ -120,34 +120,34 @@ class ParseResult {
   ]);
 
   /// Generate Mermaid diagram as a string.
-  String toMermaid({bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+  String toMermaid({bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) {
     final generator = MermaidGenerator();
-    return generator.generate(classes, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+    return generator.generate(classes, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
   }
 
   /// Generate Mermaid diagram for PNG rendering (without click handlers).
-  String toMermaidForPng({bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+  String toMermaidForPng({bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) {
     final generator = MermaidGenerator();
-    return generator.generateForPng(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+    return generator.generateForPng(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
   }
 
   /// Generate Mermaid diagram as JSON (Mermaid Live Editor format).
-  Map<String, dynamic> toMermaidJson({bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+  Map<String, dynamic> toMermaidJson({bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) {
     final generator = MermaidGenerator();
-    return generator.generateJson(classes, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+    return generator.generateJson(classes, projectPath: projectPath, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
   }
 
   /// Save Mermaid diagram to a file.
-  Future<void> saveMermaidFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) async {
-    final content = toMermaid(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+  Future<void> saveMermaidFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) async {
+    final content = toMermaid(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
     await file.writeAsString(content);
   }
 
   /// Save Mermaid JSON to a file.
-  Future<void> saveJsonFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) async {
-    final json = toMermaidJson(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+  Future<void> saveJsonFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) async {
+    final json = toMermaidJson(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
     final encoder = JsonEncoder.withIndent('  ');
     final content = encoder.convert(json);
     final file = File(outputPath);
@@ -156,22 +156,22 @@ class ParseResult {
   }
 
   /// Generate interactive HTML with embedded Mermaid diagram.
-  String toHtml({bool noPrivate = false, bool noExternal = false, bool noMethods = false}) {
+  String toHtml({bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) {
     final generator = HtmlGenerator();
-    return generator.generateHtml(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+    return generator.generateHtml(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
   }
 
   /// Save interactive HTML file.
-  Future<void> saveHtmlFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) async {
-    final content = toHtml(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+  Future<void> saveHtmlFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) async {
+    final content = toHtml(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
     await file.writeAsString(content);
   }
 
   /// Save Mermaid diagram as PNG using kroki.io service.
-  Future<void> savePngFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false}) async {
-    final mermaidCode = toMermaidForPng(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods);
+  Future<void> savePngFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, Set<String>? onlyRelations}) async {
+    final mermaidCode = toMermaidForPng(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, onlyRelations: onlyRelations);
 
     try {
       // Use kroki.io to render the diagram via POST request
@@ -197,28 +197,28 @@ class ParseResult {
   }
 
   /// Generate Graphviz DOT diagram as a string.
-  String toGraphviz({bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) {
+  String toGraphviz({bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) {
     final generator = GraphvizGenerator();
-    return generator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+    return generator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
   }
 
   /// Save Graphviz DOT diagram to a file.
-  Future<void> saveGraphvizFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) async {
-    final content = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+  Future<void> saveGraphvizFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) async {
+    final content = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
     await file.writeAsString(content);
   }
 
   /// Generate interactive HTML with embedded Graphviz diagram.
-  String toGraphvizHtml({bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) {
+  String toGraphvizHtml({bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) {
     final generator = GraphvizHtmlGenerator();
-    return generator.generateHtml(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+    return generator.generateHtml(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
   }
 
   /// Save interactive Graphviz HTML file using kroki.io rendering.
-  Future<void> saveGraphvizHtmlFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) async {
-    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+  Future<void> saveGraphvizHtmlFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) async {
+    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
     final content = _generateGraphvizHtmlWithKroki(dotCode);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
@@ -226,8 +226,8 @@ class ParseResult {
   }
 
   /// Save Graphviz SVG file.
-  Future<void> saveGraphvizSvgFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) async {
-    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+  Future<void> saveGraphvizSvgFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) async {
+    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
     final svg = await _renderGraphvizToSvg(dotCode, layout: layout);
     final file = File(outputPath);
     await file.parent.create(recursive: true);
@@ -235,8 +235,8 @@ class ParseResult {
   }
 
   /// Save Graphviz as PNG file.
-  Future<void> saveGraphvizPngFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) async {
-    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+  Future<void> saveGraphvizPngFile(String outputPath, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) async {
+    final dotCode = toGraphviz(noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
 
     try {
       final png = await _renderGraphvizToPng(dotCode, layout: layout);

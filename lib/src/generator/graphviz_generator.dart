@@ -4,12 +4,12 @@ import '../utils/diagram_utils.dart';
 /// Generates Graphviz DOT format diagrams from ClassInfo objects.
 class GraphvizGenerator {
   /// Generate a Graphviz DOT diagram string.
-  String generate(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) {
-    return _generateCode(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+  String generate(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) {
+    return _generateCode(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
   }
 
   /// Generate DOT code with optional filtering.
-  String _generateCode(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) {
+  String _generateCode(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) {
     final buffer = StringBuffer();
     buffer.writeln('digraph UMLClassDiagram {');
 
@@ -67,7 +67,7 @@ class GraphvizGenerator {
       final classNodeId = _nodeId(className);
 
       // Extends relationship
-      if (classInfo.extendsClass != null) {
+      if (classInfo.extendsClass != null && (onlyRelations == null || onlyRelations.contains('extends'))) {
         bool shouldInclude = true;
         if (noExternal && !internalClassNames.contains(classInfo.extendsClass!)) {
           shouldInclude = false;
@@ -82,52 +82,58 @@ class GraphvizGenerator {
       }
 
       // Implements relationships
-      for (final interface in classInfo.implementsList) {
-        bool shouldInclude = true;
-        if (noExternal && !internalClassNames.contains(interface)) {
-          shouldInclude = false;
-        }
-        if (noPrivate && interface.startsWith('_')) {
-          shouldInclude = false;
-        }
-        if (shouldInclude) {
-          final interfaceNodeId = _nodeId(interface);
-          relationships.add('$interfaceNodeId -> $classNodeId [arrowhead=empty, dir=back, style=dashed, label="implements"];');
+      if (onlyRelations == null || onlyRelations.contains('implements')) {
+        for (final interface in classInfo.implementsList) {
+          bool shouldInclude = true;
+          if (noExternal && !internalClassNames.contains(interface)) {
+            shouldInclude = false;
+          }
+          if (noPrivate && interface.startsWith('_')) {
+            shouldInclude = false;
+          }
+          if (shouldInclude) {
+            final interfaceNodeId = _nodeId(interface);
+            relationships.add('$interfaceNodeId -> $classNodeId [arrowhead=empty, dir=back, style=dashed, label="implements"];');
+          }
         }
       }
 
       // With relationships (mixins)
-      for (final mixin in classInfo.withList) {
-        bool shouldInclude = true;
-        if (noExternal && !internalClassNames.contains(mixin)) {
-          shouldInclude = false;
-        }
-        if (noPrivate && mixin.startsWith('_')) {
-          shouldInclude = false;
-        }
-        if (shouldInclude) {
-          final mixinNodeId = _nodeId(mixin);
-          relationships.add('$mixinNodeId -> $classNodeId [arrowhead=empty, dir=back, style=dashed, label="with"];');
+      if (onlyRelations == null || onlyRelations.contains('with')) {
+        for (final mixin in classInfo.withList) {
+          bool shouldInclude = true;
+          if (noExternal && !internalClassNames.contains(mixin)) {
+            shouldInclude = false;
+          }
+          if (noPrivate && mixin.startsWith('_')) {
+            shouldInclude = false;
+          }
+          if (shouldInclude) {
+            final mixinNodeId = _nodeId(mixin);
+            relationships.add('$mixinNodeId -> $classNodeId [arrowhead=empty, dir=back, style=dashed, label="with"];');
+          }
         }
       }
 
       // Uses relationships
-      for (final used in classInfo.usesList) {
-        bool shouldInclude = true;
-        if (noExternal && !internalClassNames.contains(used)) {
-          shouldInclude = false;
-        }
-        if (noPrivate && used.startsWith('_')) {
-          shouldInclude = false;
-        }
-        if (shouldInclude) {
-          final usedNodeId = _nodeId(used);
-          relationships.add('$classNodeId -> $usedNodeId [arrowhead=open, dir=forward, style=solid, label="uses"];');
+      if (onlyRelations == null || onlyRelations.contains('uses')) {
+        for (final used in classInfo.usesList) {
+          bool shouldInclude = true;
+          if (noExternal && !internalClassNames.contains(used)) {
+            shouldInclude = false;
+          }
+          if (noPrivate && used.startsWith('_')) {
+            shouldInclude = false;
+          }
+          if (shouldInclude) {
+            final usedNodeId = _nodeId(used);
+            relationships.add('$classNodeId -> $usedNodeId [arrowhead=open, dir=forward, style=solid, label="uses"];');
+          }
         }
       }
 
       // Nested class relationships
-      if (classInfo.nestedIn != null) {
+      if (classInfo.nestedIn != null && (onlyRelations == null || onlyRelations.contains('nested'))) {
         final nestedInNodeId = _nodeId(classInfo.nestedIn!);
         relationships.add('$classNodeId -> $nestedInNodeId [arrowhead=odiamond, dir=forward, style=solid, label="nestedIn"];');
       }

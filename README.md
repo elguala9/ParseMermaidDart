@@ -29,6 +29,7 @@ A Dart library that analyzes Dart projects and generates diagram from source cod
 - **Large Project Support**: Built-in flags to reduce diagram size:
   - `--no-private`: Exclude all private elements (classes and methods starting with `_`)
   - `--no-external`: Exclude stdlib and third-party library classes
+  - `--only-relations`: Show only specific relationship types (`extends`, `implements`, `with`, `uses`, `nested`)
 
 ## Installation
 
@@ -38,7 +39,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  diagram_dart: ^0.1.0
+  diagram_dart: ^0.4.0
 ```
 
 Then run:
@@ -223,6 +224,7 @@ diagram_generator--help
 - `--monorepo` - Analyze as a monorepo (finds and analyzes all packages in nested directories)
 - `--no-private` - Exclude private methods (starting with `_`) from diagram
 - `--no-external` - Exclude external classes (stdlib and third-party libraries) from diagram
+- `--only-relations <types>` - Show only the specified relation types (comma-separated: `extends`, `implements`, `with`, `uses`, `nested`)
 - `--verbose` - Show detailed analysis output
 - `-h, --help` - Show help message
 - `-v, --version` - Show version
@@ -431,11 +433,28 @@ diagram_generator. --no-private --no-external --format html
 # Output: ~50-100KB diagram
 ```
 
+**Option 4: Filter Relationship Types**
+
+```bash
+# Show only class hierarchy (inheritance)
+diagram_generator . --only-relations extends
+
+# Show only interface contracts
+diagram_generator . --only-relations implements,with
+
+# Show only dependency graph
+diagram_generator . --only-relations uses
+
+# Combine with other filters
+diagram_generator . --only-relations extends,implements --no-external --format html
+```
+
 ### When to Use Each Option
 
 - **`--no-private`**: When you want to document public API architecture (removes all classes/methods starting with `_`)
 - **`--no-external`**: When external dependencies clutter the diagram
-- **Both**: For large projects, best visualization, or documentation purposes
+- **`--only-relations`**: When you want to focus on one type of relationship (e.g., only inheritance for a class hierarchy view)
+- **All combined**: For large projects, best visualization, or documentation purposes
 
 ## Testing
 

@@ -6,9 +6,9 @@ import 'graphviz_generator.dart';
 /// Generates HTML visualization of Graphviz diagrams.
 class GraphvizHtmlGenerator {
   /// Generate HTML with embedded Graphviz diagram rendered via kroki.io.
-  String generateHtml(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot'}) {
+  String generateHtml(List<ClassInfo> classes, {bool noPrivate = false, bool noExternal = false, bool noMethods = false, String layout = 'dot', Set<String>? onlyRelations}) {
     final graphvizGenerator = GraphvizGenerator();
-    final dotCode = graphvizGenerator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout);
+    final dotCode = graphvizGenerator.generate(classes, noPrivate: noPrivate, noExternal: noExternal, noMethods: noMethods, layout: layout, onlyRelations: onlyRelations);
 
     // Base64 encode the DOT code for kroki.io URL
     final encodedDot = base64Url.encode(utf8.encode(dotCode)).toString().replaceAll('=', '');
